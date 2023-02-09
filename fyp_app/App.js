@@ -1,5 +1,7 @@
 import MainContainer from "./navigation/MainContainer";
+import LogFoodScreen from "./navigation/screens/LogFoodScreen";
 
 export default function App() {
-  return <MainContainer />;
+  return <LogFoodScreen />;
+  // return <MainContainer />;
 }
