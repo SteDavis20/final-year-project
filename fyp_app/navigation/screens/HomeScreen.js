@@ -17,7 +17,7 @@ import { PieChart } from "react-native-gifted-charts";
 
 import { foodDummyData, transportDummyData } from "../../dummyData";
 
-export default function HomeScreen() {
+export default function HomeScreen({ navigation }) {
   const [modalVisible, setModalVisible] = useState(false);
   const [buttonPressed, setButtonPressed] = useState(false);
 
@@ -107,7 +107,7 @@ export default function HomeScreen() {
         <Text style={styles.setFontSizeOne}>Home Screen!</Text>
         <StatusBar style="auto" />
         {/****************************************************************************/}
-        {/* Food Log Entires */}
+        {/* Food Log Entries */}
         {/* Maybe make these buttons at a later stage, to allow user to edit/delete entry */}
         <View style={styles1.container}>
           <ScrollView>
@@ -129,27 +129,13 @@ export default function HomeScreen() {
               })}
             </View>
             {/****************************************************************************/}
-            {/* Transport Log Entires */}
+            {/* Transport Log Entries */}
             <Text style={styles.setFontSizeOne}>Transport</Text>
             <View>
               {transportDummyData.map((transport) => {
                 return (
                   <View>
                     <Pressable
-                      // onPress={() => {
-                      //   Alert.alert("Alert Title", "Log Food Pressed", [
-                      //     {
-                      //       text: "Cancel",
-                      //       onPress: () => console.log("Cancel Pressed"),
-                      //       style: "cancel",
-                      //     },
-                      //     {
-                      //       text: "Save",
-                      //       onPress: () => console.log("Save Pressed"),
-                      //     },
-                      //   ]);
-                      // }}
-
                       onPress={() => {
                         setButtonPressed(buttonPressed);
                       }}
@@ -224,7 +210,7 @@ export default function HomeScreen() {
           }}
         />
 
-        <Modal
+        {/* <Modal
           animationType="slide"
           // transparent={true}
           visible={modalVisible}
@@ -232,8 +218,8 @@ export default function HomeScreen() {
             Alert.alert("Modal has been closed.");
             setModalVisible(!modalVisible);
           }}
-        >
-          <View>
+        > */}
+        {/* <View>
             <Pressable
               style={[styles.button, styles.buttonClose]}
               onPress={() => setModalVisible(!modalVisible)}
@@ -243,8 +229,8 @@ export default function HomeScreen() {
               </Text>
             </Pressable>
             <LogFoodScreen />
-          </View>
-          {/* <View style={styles.centeredView}>
+          </View> */}
+        {/* <View style={styles.centeredView}>
           <View style={styles.modalView}>
             <Text style={styles.modalText}>Hello World!</Text>
             {transportDummyData.map((transport) => {
@@ -293,7 +279,7 @@ export default function HomeScreen() {
 
                   {/*  borderRadius: 20,
     backgroundColor: "lightgreen", */}
-          {/* </View>
+        {/* </View>
               );
             })}
 
@@ -305,10 +291,11 @@ export default function HomeScreen() {
             </Pressable>
           </View>
         </View> */}
-        </Modal>
+        {/* </Modal> */}
       </ScrollView>
       <View style={{ bottom: 100, flexDirection: "row-reverse" }}>
-        <Pressable onPress={() => setModalVisible(true)}>
+        {/* <Pressable onPress={() => setModalVisible(true)}> */}
+        <Pressable onPress={() => navigation.navigate("Log Food")}>
           <View
             style={{
               paddingHorizontal: 10,
