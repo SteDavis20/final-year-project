@@ -46,6 +46,7 @@ function MainContainer() {
           name={IndividualHistoryName}
           component={IndividualHistoryScreen}
         />
+        
       </Tab.Navigator>
     </NavigationContainer>
   );

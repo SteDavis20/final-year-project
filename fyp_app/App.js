@@ -3,7 +3,7 @@ import LogFoodScreen from "./navigation/screens/LogFoodScreen";
 import LogTransportScreen from "./navigation/screens/LogTransportScreen";
 
 export default function App() {
-  return <LogTransportScreen />;
+  // return <LogTransportScreen />;
   // return <LogFoodScreen />;
-  // return <MainContainer />;
+  return <MainContainer />;
 }

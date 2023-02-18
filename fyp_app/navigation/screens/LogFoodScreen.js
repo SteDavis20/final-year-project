@@ -74,6 +74,7 @@ export default function LogFoodScreen() {
       {foodData.map((food) => {
         return (
           <View>
+            {/* Pressable & View & Text */}
             <Button
               onPress={() => {
                 Alert.alert("Alert Title", food.name + " Selected", [
