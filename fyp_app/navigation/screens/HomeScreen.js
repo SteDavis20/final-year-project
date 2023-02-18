@@ -107,7 +107,7 @@ export default function HomeScreen({ navigation }) {
         <Text style={styles.setFontSizeOne}>Home Screen!</Text>
         <StatusBar style="auto" />
         {/****************************************************************************/}
-        {/* Food Log Entires */}
+        {/* Food Log Entries */}
         {/* Maybe make these buttons at a later stage, to allow user to edit/delete entry */}
         <View style={styles1.container}>
           <ScrollView>
@@ -129,27 +129,13 @@ export default function HomeScreen({ navigation }) {
               })}
             </View>
             {/****************************************************************************/}
-            {/* Transport Log Entires */}
+            {/* Transport Log Entries */}
             <Text style={styles.setFontSizeOne}>Transport</Text>
             <View>
               {transportDummyData.map((transport) => {
                 return (
                   <View>
                     <Pressable
-                      // onPress={() => {
-                      //   Alert.alert("Alert Title", "Log Food Pressed", [
-                      //     {
-                      //       text: "Cancel",
-                      //       onPress: () => console.log("Cancel Pressed"),
-                      //       style: "cancel",
-                      //     },
-                      //     {
-                      //       text: "Save",
-                      //       onPress: () => console.log("Save Pressed"),
-                      //     },
-                      //   ]);
-                      // }}
-
                       onPress={() => {
                         setButtonPressed(buttonPressed);
                       }}
