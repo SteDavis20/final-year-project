@@ -15,6 +15,7 @@ import { useState } from "react";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import SelectDropdown from "react-native-select-dropdown";
+import { NavigationContainer } from "@react-navigation/native";
 
 const foodData = [
   {
@@ -78,7 +79,7 @@ const portionSizesData = [
   },
 ];
 
-export default function LogFoodScreen() {
+export default function LogFoodScreen({ navigation }) {
   const [text, onChangeText] = useState("Useless Text");
   const [number, onChangeNumber] = useState("");
 
@@ -203,23 +204,27 @@ export default function LogFoodScreen() {
       <View style={{ flexDirection: "row", justifyContent: "space-evenly" }}>
         <Pressable
           onPress={() => {
-            Alert.alert("Alert Title", "Cancel Selected", [
-              {
-                text: "Cancel",
-                onPress: () => console.log("Cancel Pressed"),
-                style: "cancel",
-              },
-              {
-                text: "Continue",
-                onPress: () => console.log("Continue Pressed"),
-              },
-            ]);
+            Alert.alert(
+              "Alert Title",
+              "Selecting reset will lose your current progress",
+              [
+                {
+                  text: "Cancel",
+                  onPress: () => console.log("Cancel Pressed"),
+                  style: "cancel",
+                },
+                {
+                  text: "Reset",
+                  onPress: () => console.log("Reset Pressed"),
+                },
+              ]
+            );
           }}
           style={styles.button}
           // style={{ color: "FF0000" }} // red
         >
           <View>
-            <Text style={{ color: "red", fontWeight: "bold" }}>Cancel</Text>
+            <Text style={{ color: "red", fontWeight: "bold" }}>Reset</Text>
           </View>
         </Pressable>
         <Pressable
@@ -232,7 +237,9 @@ export default function LogFoodScreen() {
               },
               {
                 text: "Continue",
-                onPress: () => console.log("Continue Pressed"),
+                onPress: () => {
+                  navigation.pop();
+                },
               },
             ]);
           }}
@@ -388,12 +395,3 @@ const styles = StyleSheet.create({
   },
   dropdown4RowTxtStyle: { color: "#444", textAlign: "left" },
 });
-
-// Tim styling
-// style={{
-//   flexDirection: "row",
-//   width: "100%",
-//   backgroundColor: "pink",
-//   justifyContent: "space-between",
-//   borderRadius: 20,
-// }}
