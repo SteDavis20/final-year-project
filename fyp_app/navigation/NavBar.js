@@ -27,32 +27,27 @@ const Tab = createBottomTabNavigator();
 // areachart
 // see: https://oblador.github.io/react-native-vector-icons/
 
-function MainContainer() {
+function NavBar() {
   return (
-    <NavigationContainer>
-      <Tab.Navigator initialRouteName={homeName}>
-        {/* screenOptions goes here to highlight selected screen */}
+    <Tab.Navigator initialRouteName={homeName}>
+      {/* screenOptions goes here to highlight selected screen */}
 
-        <Tab.Screen name={homeName} component={HomeScreen} />
-        <Tab.Screen
-          name={IndividualLeaderboardName}
-          component={IndividualLeaderboardScreen}
-        />
-        <Tab.Screen
-          name={TeamLeaderboardName}
-          component={TeamLeaderboardScreen}
-        />
-        <Tab.Screen
-          name={IndividualHistoryName}
-          component={IndividualHistoryScreen}
-        />
-        
-      </Tab.Navigator>
-    </NavigationContainer>
+      <Tab.Screen name={homeName} component={HomeScreen} />
+      <Tab.Screen
+        name={IndividualLeaderboardName}
+        component={IndividualLeaderboardScreen}
+      />
+      <Tab.Screen
+        name={TeamLeaderboardName}
+        component={TeamLeaderboardScreen}
+      />
+      <Tab.Screen
+        name={IndividualHistoryName}
+        component={IndividualHistoryScreen}
+      />
+    </Tab.Navigator>
   );
 }
-
-export default MainContainer;
 
 const styles = StyleSheet.create({
   container: {
@@ -62,3 +57,5 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
 });
+
+export default NavBar;

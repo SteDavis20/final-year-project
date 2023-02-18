@@ -17,7 +17,7 @@ import { PieChart } from "react-native-gifted-charts";
 
 import { foodDummyData, transportDummyData } from "../../dummyData";
 
-export default function HomeScreen() {
+export default function HomeScreen({ navigation }) {
   const [modalVisible, setModalVisible] = useState(false);
   const [buttonPressed, setButtonPressed] = useState(false);
 
@@ -224,7 +224,7 @@ export default function HomeScreen() {
           }}
         />
 
-        <Modal
+        {/* <Modal
           animationType="slide"
           // transparent={true}
           visible={modalVisible}
@@ -232,8 +232,8 @@ export default function HomeScreen() {
             Alert.alert("Modal has been closed.");
             setModalVisible(!modalVisible);
           }}
-        >
-          <View>
+        > */}
+        {/* <View>
             <Pressable
               style={[styles.button, styles.buttonClose]}
               onPress={() => setModalVisible(!modalVisible)}
@@ -243,8 +243,8 @@ export default function HomeScreen() {
               </Text>
             </Pressable>
             <LogFoodScreen />
-          </View>
-          {/* <View style={styles.centeredView}>
+          </View> */}
+        {/* <View style={styles.centeredView}>
           <View style={styles.modalView}>
             <Text style={styles.modalText}>Hello World!</Text>
             {transportDummyData.map((transport) => {
@@ -293,7 +293,7 @@ export default function HomeScreen() {
 
                   {/*  borderRadius: 20,
     backgroundColor: "lightgreen", */}
-          {/* </View>
+        {/* </View>
               );
             })}
 
@@ -305,10 +305,11 @@ export default function HomeScreen() {
             </Pressable>
           </View>
         </View> */}
-        </Modal>
+        {/* </Modal> */}
       </ScrollView>
       <View style={{ bottom: 100, flexDirection: "row-reverse" }}>
-        <Pressable onPress={() => setModalVisible(true)}>
+        {/* <Pressable onPress={() => setModalVisible(true)}> */}
+        <Pressable onPress={() => navigation.navigate("Log Food")}>
           <View
             style={{
               paddingHorizontal: 10,
