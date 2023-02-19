@@ -87,24 +87,6 @@ export default function LogFoodScreen({ navigation }) {
     <ScrollView style={{ backgroundColor: "#1cb871" }}>
       <Text style={styles.heading}>Please log food below</Text>
       <Text style={styles.heading}>Food type:</Text>
-      {/* <SelectDropdown
-        data={foodData}
-        onSelect={(selectedItem, index) => {
-          console.log(selectedItem, index);
-          console.log(selectedItem.name, index);
-        }}
-        buttonTextAfterSelection={(selectedItem, index) => {
-          // text represented after item is selected
-          // if data array is an array of objects then return selectedItem.property to render after item is selected
-          return selectedItem.name;
-        }}
-        rowTextForSelection={(item, index) => {
-          // text represented for each item in dropdown
-          // if data array is an array of objects then return item.property to represent item in dropdown
-          return item.name;
-        }}
-        buttonStyle={styles.dropdown1ButtonStyle}
-      /> */}
       <SelectDropdown
         data={foodData}
         onSelect={(selectedItem, index) => {

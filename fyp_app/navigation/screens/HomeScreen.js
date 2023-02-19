@@ -152,7 +152,26 @@ export default function HomeScreen({ navigation }) {
       </ScrollView>
       <View style={{ bottom: 100, flexDirection: "row-reverse" }}>
         {/* <Pressable onPress={() => setModalVisible(true)}> */}
-        <Pressable onPress={() => navigation.navigate("Log Food")}>
+        {/* <Pressable onPress={() => navigation.navigate("Log Food")}> */}
+        <Pressable
+          onPress={() => {
+            Alert.alert("Log Type", "Select emission log type", [
+              {
+                text: "Food",
+                onPress: () => {
+                  navigation.navigate("Log Food");
+                },
+                // style: "cancel",
+              },
+              {
+                text: "Transport",
+                onPress: () => {
+                  navigation.navigate("Log Transport");
+                },
+              },
+            ]);
+          }}
+        >
           <View
             style={{
               paddingHorizontal: 10,
