@@ -9,17 +9,24 @@ import {
   Modal,
   Pressable,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import LogFoodScreen from "./LogFoodScreen";
 
 import { PieChart } from "react-native-gifted-charts";
+
+import { useIsFocused } from "@react-navigation/native";
 
 import { foodDummyData, transportDummyData } from "../../dummyData";
 
 export default function HomeScreen({ navigation }) {
   const [modalVisible, setModalVisible] = useState(false);
   const [buttonPressed, setButtonPressed] = useState(false);
+
+  const isFocused = useIsFocused();
+
+  // Re-render screen after popping back from log emission screen
+  useEffect(() => {}, [isFocused]);
 
   const renderLegend = (text, color) => {
     return (
@@ -133,14 +140,16 @@ export default function HomeScreen({ navigation }) {
             {/* Transport Log Entries */}
             <Text style={styles.heading}>Transport</Text>
             <View>
-              {foodDummyData.map((food) => {
+              {transportDummyData.map((transport) => {
                 return (
                   <View>
                     {/* <Pressable onPress={()=>{setButtonPressed(!buttonPressed)}}> */}
                     <Pressable>
                       <View style={[styles.logEntry, { flexDirection: "row" }]}>
-                        <Text style={styles.foodName}>{food.name}</Text>
-                        <Text style={styles.co2e}>{food.co2e} gCo2e/kg</Text>
+                        <Text style={styles.foodName}>{transport.name}</Text>
+                        <Text style={styles.co2e}>
+                          {transport.co2e} gCo2e/kg
+                        </Text>
                       </View>
                     </Pressable>
                   </View>

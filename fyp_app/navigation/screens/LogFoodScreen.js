@@ -10,12 +10,13 @@ import {
   View,
 } from "react-native";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import SelectDropdown from "react-native-select-dropdown";
 import { NavigationContainer } from "@react-navigation/native";
+import { foodDummyData, transportDummyData } from "../../dummyData";
 
 const foodData = [
   {
@@ -82,6 +83,14 @@ const portionSizesData = [
 export default function LogFoodScreen({ navigation }) {
   const [text, onChangeText] = useState("Useless Text");
   const [number, onChangeNumber] = useState("");
+  const [foodSelected, setFoodSelected] = useState("");
+
+  function addLogToHomepage(log) {
+    foodDummyData.push(log);
+  }
+
+  // Update food selected with new value to pass to addLogToHomepage()
+  useEffect(() => {});
 
   return (
     <ScrollView style={{ backgroundColor: "#1cb871" }}>
@@ -90,7 +99,7 @@ export default function LogFoodScreen({ navigation }) {
       <SelectDropdown
         data={foodData}
         onSelect={(selectedItem, index) => {
-          console.log(selectedItem, index);
+          setFoodSelected(selectedItem.name);
         }}
         defaultButtonText={"Select food type"}
         buttonTextAfterSelection={(selectedItem, index) => {
@@ -129,7 +138,7 @@ export default function LogFoodScreen({ navigation }) {
       <SelectDropdown
         data={portionSizesData}
         onSelect={(selectedItem, index) => {
-          console.log(selectedItem, index);
+          console.log("Selected portion size: " + selectedItem);
         }}
         defaultButtonText={"Select portion size"}
         buttonTextAfterSelection={(selectedItem, index) => {
@@ -220,6 +229,12 @@ export default function LogFoodScreen({ navigation }) {
               {
                 text: "Continue",
                 onPress: () => {
+                  let log = {
+                    id: foodDummyData.length + 1,
+                    name: foodSelected,
+                    co2e: 5,
+                  };
+                  addLogToHomepage(log);
                   navigation.pop();
                 },
               },
