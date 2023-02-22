@@ -84,9 +84,21 @@ export default function LogFoodScreen({ navigation }) {
   const [text, onChangeText] = useState("Useless Text");
   const [number, onChangeNumber] = useState("");
   const [foodSelected, setFoodSelected] = useState("");
+  const [portionUnitSelected, setPortionUnitSelected] = useState("");
+
+  const [refreshPage, setRefreshPage] = useState(false); // used to automatically refresh page
+
+  useEffect(() => {}, [refreshPage]);
 
   function addLogToHomepage(log) {
     foodDummyData.push(log);
+  }
+
+  function resetData() {
+    onChangeText(""); // no workie
+    onChangeNumber(""); // works
+    setFoodSelected(""); // no workie
+    setPortionUnitSelected("");
   }
 
   // Update food selected with new value to pass to addLogToHomepage()
@@ -103,7 +115,7 @@ export default function LogFoodScreen({ navigation }) {
         }}
         defaultButtonText={"Select food type"}
         buttonTextAfterSelection={(selectedItem, index) => {
-          return selectedItem.name;
+          return foodSelected; // resets to "" after cancel selected
         }}
         rowTextForSelection={(item, index) => {
           return item.name;
@@ -139,10 +151,11 @@ export default function LogFoodScreen({ navigation }) {
         data={portionSizesData}
         onSelect={(selectedItem, index) => {
           console.log("Selected portion size: " + selectedItem);
+          setPortionUnitSelected(selectedItem.name);
         }}
         defaultButtonText={"Select portion size"}
         buttonTextAfterSelection={(selectedItem, index) => {
-          return selectedItem.name;
+          return portionUnitSelected;
         }}
         rowTextForSelection={(item, index) => {
           return item.name;
@@ -201,12 +214,17 @@ export default function LogFoodScreen({ navigation }) {
               [
                 {
                   text: "Cancel",
-                  onPress: () => console.log("Cancel Pressed"),
+                  onPress: () => {
+                    // do nothing
+                  },
                   style: "cancel",
                 },
                 {
                   text: "Reset",
-                  onPress: () => console.log("Reset Pressed"),
+                  onPress: () => {
+                    resetData();
+                    setRefreshPage(!refreshPage);
+                  },
                 },
               ]
             );
@@ -220,10 +238,12 @@ export default function LogFoodScreen({ navigation }) {
         </Pressable>
         <Pressable
           onPress={() => {
-            Alert.alert("Alert Title", "Save Selected", [
+            Alert.alert("Please Confirm", "Save Selected", [
               {
                 text: "Cancel",
-                onPress: () => console.log("Cancel Pressed"),
+                onPress: () => {
+                  // do nothing
+                },
                 style: "cancel",
               },
               {
