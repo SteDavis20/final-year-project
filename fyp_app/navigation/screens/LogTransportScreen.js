@@ -10,18 +10,21 @@ import {
   Pressable,
 } from "react-native";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+
+import transportData from "../../co2Emissions";
+
+import { foodDummyData, transportDummyData } from "../../dummyData";
 
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import SelectDropdown from "react-native-select-dropdown";
 
-const transportData = [
+const transportTypeData = [
   {
     key: 1,
     name: "Car",
   },
-
   {
     key: 2,
     name: "Bus",
@@ -43,15 +46,42 @@ const transportData = [
 const carSizesData = [
   {
     key: 1,
+    // name: "Small < 1.4 litres",
     name: "Small",
   },
   {
     key: 2,
+    // name: "Medium 1.4-2.0 litres",
     name: "Medium",
   },
   {
     key: 3,
+    // name: "Large > 2.0 litres",
     name: "Large",
+  },
+  {
+    key: 4,
+    // name: "average / unsure",
+    name: "Average",
+  },
+];
+
+const carFuelTypeData = [
+  {
+    key: 1,
+    name: "Petrol",
+  },
+  {
+    key: 2,
+    name: "Diesel",
+  },
+  {
+    key: 3,
+    name: "Hybrid",
+  },
+  {
+    key: 4,
+    name: "Electric",
   },
 ];
 
@@ -68,20 +98,77 @@ const unitsOfDistanceData = [
 
 export default function LogTransportScreen({ navigation }) {
   const [text, onChangeText] = useState("Useless Text");
+  const [modeOfTransportSelected, setModeOfTransportSelected] = useState("");
+  const [carSizeSelected, setCarSizeSelected] = useState("");
+  const [fuelTypeSelected, setFuelTypeSelected] = useState("");
   const [distanceEntered, onChangeDistanceEntered] = useState("");
-  const [numberOfPassemgers, onChangeNumberOfPassengers] = useState("");
+  const [numberOfPassengers, onChangeNumberOfPassengers] = useState("");
+  const [unitsOfDistanceSelected, setUnitsOfDistanceSelected] = useState("");
+  const [mapIdentifier, setMapIdentifier] = useState("");
+
+  useEffect(() => {
+    if (mapIdentifier != "") {
+      console.log("Should work now!");
+      console.log("Map identifier: " + mapIdentifier);
+      let log = {
+        id: transportDummyData.length + 1,
+        name: mapIdentifier,
+        co2e: calculateTotalEmissions(),
+      };
+      console.log("New log: " + JSON.stringify(log));
+      addLogToHomepage(log);
+    }
+  }, [mapIdentifier]);
+
+  function calculateTotalEmissions() {
+    console.log("Beginning calculation");
+    console.log("Distance: " + distanceEntered);
+    console.log("Method of transport: " + mapIdentifier);
+    let conversionFactor = 8 / 5;
+    if (unitsOfDistanceSelected == "Miles") {
+      distanceEntered *= conversionFactor;
+    }
+
+    /* Parse json data to get co2e depending on car, luas, fuel type, car size etc., */
+    let gCo2ePerKm = 0;
+    console.log("Transport data: \n" + JSON.stringify(transportData));
+    for (let i = 0; i < transportData.length; i++) {
+      console.log(
+        "Map identifier: " +
+          mapIdentifier +
+          "\nTransport Index identifier: " +
+          transportData[i].type
+      );
+      if (mapIdentifier == transportData[i].type) {
+        console.log("Match found in transport data!");
+        gCo2ePerKm = transportData[i].gCo2ePerKm;
+        break;
+      }
+    }
+    let totalEmissions = gCo2ePerKm * distanceEntered;
+    if (modeOfTransportSelected == "car") {
+      totalEmissions /= numberOfPassengers;
+    }
+    // instead of all these if statements, use naming system of: car size + fuel type
+    // set or update this key based on user input
+    return totalEmissions;
+  }
+
+  function addLogToHomepage(log) {
+    transportDummyData.push(log);
+  }
 
   return (
     <ScrollView style={{ backgroundColor: "purple" }}>
       <Text style={styles.heading}>Mode of Transport</Text>
       <SelectDropdown
-        data={transportData}
+        data={transportTypeData}
         onSelect={(selectedItem, index) => {
-          console.log(selectedItem, index);
+          setModeOfTransportSelected(selectedItem.name);
         }}
         defaultButtonText={"Select transport type"}
         buttonTextAfterSelection={(selectedItem, index) => {
-          return selectedItem.name;
+          return modeOfTransportSelected;
         }}
         rowTextForSelection={(item, index) => {
           return item.name;
@@ -132,39 +219,42 @@ export default function LogTransportScreen({ navigation }) {
         Only have this if car is selected as mode of transport! Could be bus or
         luas or dart
       </Text>
-      <Text style={styles.heading}>Car Size - Add photo</Text>
-      <SelectDropdown
-        data={carSizesData}
-        onSelect={(selectedItem, index) => {
-          console.log(selectedItem, index);
-        }}
-        defaultButtonText={"Select car size"}
-        buttonTextAfterSelection={(selectedItem, index) => {
-          return selectedItem.name;
-        }}
-        rowTextForSelection={(item, index) => {
-          return item.name;
-        }}
-        buttonStyle={styles.dropdown1ButtonStyle}
-        buttonTextStyle={styles.dropdown1ButtonTxtStyle}
-        renderDropdownIcon={(isOpened) => {
-          return (
-            <FontAwesome
-              name={isOpened ? "chevron-up" : "chevron-down"}
-              color={"#444"}
-              size={18}
-            />
-          );
-        }}
-        dropdownIconPosition={"right"}
-        dropdownStyle={styles.dropdown1DropdownStyle}
-        rowStyle={styles.dropdown1RowStyle}
-        rowTextStyle={styles.dropdown1RowTxtStyle}
-      />
 
-      {/* ==================================================================================================== */}
-      {/* Have button for each car size type and user selects button  */}
-      {/* {carSizesData.map((carSize) => {
+      {modeOfTransportSelected == "Car" && (
+        <View>
+          <Text style={styles.heading}>Car Size - Add photo</Text>
+          <SelectDropdown
+            data={carSizesData}
+            onSelect={(selectedItem, index) => {
+              setCarSizeSelected(selectedItem.name);
+            }}
+            defaultButtonText={"Select car size"}
+            buttonTextAfterSelection={(selectedItem, index) => {
+              return carSizeSelected;
+            }}
+            rowTextForSelection={(item, index) => {
+              return item.name;
+            }}
+            buttonStyle={styles.dropdown1ButtonStyle}
+            buttonTextStyle={styles.dropdown1ButtonTxtStyle}
+            renderDropdownIcon={(isOpened) => {
+              return (
+                <FontAwesome
+                  name={isOpened ? "chevron-up" : "chevron-down"}
+                  color={"#444"}
+                  size={18}
+                />
+              );
+            }}
+            dropdownIconPosition={"right"}
+            dropdownStyle={styles.dropdown1DropdownStyle}
+            rowStyle={styles.dropdown1RowStyle}
+            rowTextStyle={styles.dropdown1RowTxtStyle}
+          />
+
+          {/* ==================================================================================================== */}
+          {/* Have button for each car size type and user selects button  */}
+          {/* {carSizesData.map((carSize) => {
         return (
           <View>
             <Pressable
@@ -187,6 +277,39 @@ export default function LogTransportScreen({ navigation }) {
         );
       })} */}
 
+          {/* ==================================================================================================== */}
+
+          <Text style={styles.heading}>Fuel Type</Text>
+          <SelectDropdown
+            data={carFuelTypeData}
+            onSelect={(selectedItem, index) => {
+              setFuelTypeSelected(selectedItem.name);
+            }}
+            defaultButtonText={"Select fuel type"}
+            buttonTextAfterSelection={(selectedItem, index) => {
+              return fuelTypeSelected;
+            }}
+            rowTextForSelection={(item, index) => {
+              return item.name;
+            }}
+            buttonStyle={styles.dropdown1ButtonStyle}
+            buttonTextStyle={styles.dropdown1ButtonTxtStyle}
+            renderDropdownIcon={(isOpened) => {
+              return (
+                <FontAwesome
+                  name={isOpened ? "chevron-up" : "chevron-down"}
+                  color={"#444"}
+                  size={18}
+                />
+              );
+            }}
+            dropdownIconPosition={"right"}
+            dropdownStyle={styles.dropdown1DropdownStyle}
+            rowStyle={styles.dropdown1RowStyle}
+            rowTextStyle={styles.dropdown1RowTxtStyle}
+          />
+        </View>
+      )}
       {/* ==================================================================================================== */}
       <Text style={styles.heading}>Distance</Text>
       <SafeAreaView>
@@ -203,11 +326,11 @@ export default function LogTransportScreen({ navigation }) {
       <SelectDropdown
         data={unitsOfDistanceData}
         onSelect={(selectedItem, index) => {
-          console.log(selectedItem, index);
+          setUnitsOfDistanceSelected(selectedItem.name);
         }}
         defaultButtonText={"Select unit of distance"}
         buttonTextAfterSelection={(selectedItem, index) => {
-          return selectedItem.name;
+          return unitsOfDistanceSelected;
         }}
         rowTextForSelection={(item, index) => {
           return item.name;
@@ -260,7 +383,7 @@ export default function LogTransportScreen({ navigation }) {
         <TextInput
           style={styles.dropdown1ButtonStyle}
           onChangeText={onChangeNumberOfPassengers}
-          value={numberOfPassemgers}
+          value={numberOfPassengers}
           placeholder="Enter number of passengers"
           keyboardType="numeric"
         />
@@ -305,6 +428,39 @@ export default function LogTransportScreen({ navigation }) {
               {
                 text: "Continue",
                 onPress: () => {
+                  if (modeOfTransportSelected == "Car") {
+                    let carSizeDecapitalised = carSizeSelected.toLowerCase();
+                    console.log(
+                      "Car size decapitalised: " + carSizeDecapitalised
+                    );
+                    console.log("Fuel type selected: " + fuelTypeSelected);
+                    console.log(
+                      "Mode of transport selected: " + modeOfTransportSelected
+                    );
+                    console.log(
+                      "New identifier: " +
+                        carSizeDecapitalised +
+                        fuelTypeSelected +
+                        modeOfTransportSelected
+                    );
+                    setMapIdentifier(
+                      carSizeDecapitalised +
+                        fuelTypeSelected +
+                        modeOfTransportSelected
+                    );
+                    console.log("New identifier: " + mapIdentifier);
+                  } else {
+                    let modeOfTransportDecapitalised =
+                      modeOfTransportSelected.toLowerCase();
+                    setMapIdentifier(modeOfTransportDecapitalised);
+                  }
+                  // let log = {
+                  //   id: transportDummyData.length + 1,
+                  //   name: mapIdentifier,
+                  //   co2e: calculateTotalEmissions(),
+                  // };
+                  // console.log("New log: " + JSON.stringify(log));
+                  // addLogToHomepage(log);
                   navigation.pop();
                 },
               },

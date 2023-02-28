@@ -164,21 +164,25 @@ export default function HomeScreen({ navigation }) {
         {/* <Pressable onPress={() => navigation.navigate("Log Food")}> */}
         <Pressable
           onPress={() => {
-            Alert.alert("Log Type", "Select emission log type", [
-              {
-                text: "Food",
-                onPress: () => {
-                  navigation.navigate("Log Food");
+            Alert.alert(
+              "Log Type",
+              "Select emission log type,\n SHOULD BE ABLE TO CANCEL IF YOU HIT THIS BY ACCIDENT!",
+              [
+                {
+                  text: "Food",
+                  onPress: () => {
+                    navigation.navigate("Log Food");
+                  },
+                  // style: "cancel",
                 },
-                // style: "cancel",
-              },
-              {
-                text: "Transport",
-                onPress: () => {
-                  navigation.navigate("Log Transport");
+                {
+                  text: "Transport",
+                  onPress: () => {
+                    navigation.navigate("Log Transport");
+                  },
                 },
-              },
-            ]);
+              ]
+            );
           }}
         >
           <View
