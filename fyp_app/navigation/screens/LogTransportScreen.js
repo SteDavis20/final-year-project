@@ -12,7 +12,7 @@ import {
 
 import { useEffect, useState } from "react";
 
-import transportData from "../../co2Emissions";
+import { transportData } from "../../co2Emissions";
 
 import { foodDummyData, transportDummyData } from "../../dummyData";
 
@@ -97,12 +97,11 @@ const unitsOfDistanceData = [
 ];
 
 export default function LogTransportScreen({ navigation }) {
-  const [text, onChangeText] = useState("Useless Text");
   const [modeOfTransportSelected, setModeOfTransportSelected] = useState("");
   const [carSizeSelected, setCarSizeSelected] = useState("");
   const [fuelTypeSelected, setFuelTypeSelected] = useState("");
-  const [distanceEntered, onChangeDistanceEntered] = useState("");
-  const [numberOfPassengers, onChangeNumberOfPassengers] = useState("");
+  const [distanceEntered, setDistanceEntered] = useState("");
+  const [numberOfPassengers, setNumberOfPassengers] = useState("");
   const [unitsOfDistanceSelected, setUnitsOfDistanceSelected] = useState("");
   const [mapIdentifier, setMapIdentifier] = useState("");
 
@@ -125,8 +124,9 @@ export default function LogTransportScreen({ navigation }) {
     console.log("Distance: " + distanceEntered);
     console.log("Method of transport: " + mapIdentifier);
     let conversionFactor = 8 / 5;
+    let distance = distanceEntered;
     if (unitsOfDistanceSelected == "Miles") {
-      distanceEntered *= conversionFactor;
+      distance *= conversionFactor;
     }
 
     /* Parse json data to get co2e depending on car, luas, fuel type, car size etc., */
@@ -137,15 +137,15 @@ export default function LogTransportScreen({ navigation }) {
         "Map identifier: " +
           mapIdentifier +
           "\nTransport Index identifier: " +
-          transportData[i].type
+          transportData[i].name
       );
-      if (mapIdentifier == transportData[i].type) {
+      if (mapIdentifier == transportData[i].name) {
         console.log("Match found in transport data!");
         gCo2ePerKm = transportData[i].gCo2ePerKm;
         break;
       }
     }
-    let totalEmissions = gCo2ePerKm * distanceEntered;
+    let totalEmissions = gCo2ePerKm * distance;
     if (modeOfTransportSelected == "car") {
       totalEmissions /= numberOfPassengers;
     }
@@ -315,7 +315,7 @@ export default function LogTransportScreen({ navigation }) {
       <SafeAreaView>
         <TextInput
           style={styles.dropdown1ButtonStyle}
-          onChangeText={onChangeDistanceEntered}
+          onChangeText={setDistanceEntered}
           value={distanceEntered}
           placeholder="Enter distance travelled"
           keyboardType="numeric"
@@ -382,7 +382,7 @@ export default function LogTransportScreen({ navigation }) {
       <SafeAreaView>
         <TextInput
           style={styles.dropdown1ButtonStyle}
-          onChangeText={onChangeNumberOfPassengers}
+          onChangeText={setNumberOfPassengers}
           value={numberOfPassengers}
           placeholder="Enter number of passengers"
           keyboardType="numeric"

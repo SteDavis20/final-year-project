@@ -25,5 +25,3 @@ const transportDummyData = [
 ];
 
 export { foodDummyData, transportDummyData };
-
-// export default { foodDummyData, transportDummyData };

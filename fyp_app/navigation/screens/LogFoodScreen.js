@@ -18,48 +18,7 @@ import SelectDropdown from "react-native-select-dropdown";
 import { NavigationContainer } from "@react-navigation/native";
 import { foodDummyData, transportDummyData } from "../../dummyData";
 
-const foodData = [
-  {
-    key: 1,
-    name: "Beef",
-  },
-  {
-    key: 2,
-    name: "Chicken",
-  },
-  {
-    key: 3,
-    name: "Turkey",
-  },
-  {
-    key: 4,
-    name: "Milk",
-  },
-  {
-    key: 5,
-    name: "Eggs",
-  },
-  {
-    key: 6,
-    name: "Cheese",
-  },
-  {
-    key: 7,
-    name: "Tuna",
-  },
-  {
-    key: 8,
-    name: "Mackerel",
-  },
-  {
-    key: 9,
-    name: "Salmon",
-  },
-  {
-    key: 10,
-    name: "Pork",
-  },
-];
+import { foodData } from "../../co2Emissions";
 
 const portionSizesData = [
   {
@@ -81,23 +40,50 @@ const portionSizesData = [
 ];
 
 export default function LogFoodScreen({ navigation }) {
-  const [text, onChangeText] = useState("Useless Text");
-  const [number, onChangeNumber] = useState("");
   const [foodSelected, setFoodSelected] = useState("");
+  const [portionSize, setPortionSize] = useState("");
   const [portionUnitSelected, setPortionUnitSelected] = useState("");
 
   const [refreshPage, setRefreshPage] = useState(false); // used to automatically refresh page
 
   useEffect(() => {}, [refreshPage]);
 
+  /* TO-DO: Add conversions from pounds and ounces to grams and kilograms etc., */
+  function calculateTotalEmissions() {
+    console.log("Beginning calculation");
+    console.log("Food selected: " + foodSelected);
+    console.log("Portion size: " + portionSize);
+    // let conversionFactor = 8 / 5;
+    // if (unitsOfDistanceSelected == "Miles") {
+    // distanceEntered *= conversionFactor;
+    // }
+
+    let kgCo2ePerKg = 0;
+    console.log("Food data: \n" + JSON.stringify(foodData));
+    for (let i = 0; i < foodData.length; i++) {
+      console.log(
+        "Food name: " +
+          foodSelected +
+          "\nFood name in data: " +
+          foodData[i].name
+      );
+      if (foodSelected == foodData[i].name) {
+        console.log("Match found in food data!");
+        kgCo2ePerKg = foodData[i].kgCo2ePerKg;
+        break;
+      }
+    }
+    let totalEmissions = kgCo2ePerKg * (portionSize / 1000); // /1000 to get grams entered
+    return totalEmissions;
+  }
+
   function addLogToHomepage(log) {
     foodDummyData.push(log);
   }
 
   function resetData() {
-    onChangeText(""); // no workie
-    onChangeNumber(""); // works
-    setFoodSelected(""); // no workie
+    setFoodSelected("");
+    setPortionSize("");
     setPortionUnitSelected("");
   }
 
@@ -140,8 +126,8 @@ export default function LogFoodScreen({ navigation }) {
       <SafeAreaView>
         <TextInput
           style={styles.dropdown1ButtonStyle}
-          onChangeText={onChangeNumber}
-          value={number}
+          onChangeText={setPortionSize}
+          value={portionSize}
           placeholder="useless placeholder"
           keyboardType="numeric"
         />
@@ -252,7 +238,7 @@ export default function LogFoodScreen({ navigation }) {
                   let log = {
                     id: foodDummyData.length + 1,
                     name: foodSelected,
-                    co2e: 5,
+                    co2e: calculateTotalEmissions(),
                   };
                   addLogToHomepage(log);
                   navigation.pop();

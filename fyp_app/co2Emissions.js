@@ -3,85 +3,132 @@
 /* Petrol, diesel, hybrid, electric */
 const transportData = [
   {
-    type: "dart",
+    name: "dart",
     gCo2ePerKm: 11,
   },
   {
-    type: "bus",
+    name: "bus",
     gCo2ePerKm: 15,
   },
   {
-    type: "luas",
+    name: "luas",
     gCo2ePerKm: 64,
+  },
+  {
+    name: "train",
+    gCo2ePerKm: 35,
   },
   // ==============================================================================================================================
   {
-    type: "smallDieselCar",
+    name: "smallDieselCar",
     gCo2ePerKm: 142,
   },
   {
-    type: "smallPetrolCar",
+    name: "smallPetrolCar",
     gCo2ePerKm: 154,
   },
   {
-    type: "smallHybridCar",
+    name: "smallHybridCar",
     gCo2ePerKm: 104,
   },
   {
-    type: "smallElectricCar",
+    name: "smallElectricCar",
     gCo2ePerKm: 0,
   },
   // ==============================================================================================================================
   {
-    type: "mediumDieselCar",
+    name: "mediumDieselCar",
     gCo2ePerKm: 171,
   },
   {
-    type: "mediumPetrolCar",
+    name: "mediumPetrolCar",
     gCo2ePerKm: 192,
   },
   {
-    type: "mediumHybridCar",
+    name: "mediumHybridCar",
     gCo2ePerKm: 109,
   },
   {
-    type: "mediumElectricCar",
+    name: "mediumElectricCar",
     gCo2ePerKm: 0,
   },
   // ==============================================================================================================================
   {
-    type: "largeDieselCar",
+    name: "largeDieselCar",
     gCo2ePerKm: 209,
   },
   {
-    type: "largePetrolCar",
+    name: "largePetrolCar",
     gCo2ePerKm: 283,
   },
   {
-    type: "largeHybridCar",
+    name: "largeHybridCar",
     gCo2ePerKm: 132,
   },
   {
-    type: "largeElectricCar",
+    name: "largeElectricCar",
     gCo2ePerKm: 0,
   },
   // ==============================================================================================================================
   {
-    type: "averageDieselCar",
+    name: "averageDieselCar",
     gCo2ePerKm: 173,
   },
   {
-    type: "averagePetrolCar",
+    name: "averagePetrolCar",
     gCo2ePerKm: 181,
   },
   {
-    type: "averageHybridCar",
+    name: "averageHybridCar",
     gCo2ePerKm: 115,
   },
   {
-    type: "averageElectricCar",
+    name: "averageElectricCar",
     gCo2ePerKm: 0,
   },
 ];
 
-export default transportData;
+const foodData = [
+  {
+    name: "beef",
+    kgCo2ePerKg: 12.14,
+  },
+  {
+    name: "chicken",
+    kgCo2ePerKg: 2.84,
+  },
+  {
+    name: "turkey",
+    kgCo2ePerKg: 3.76,
+  },
+  {
+    name: "milk",
+    kgCo2ePerKg: 1.19,
+  },
+  {
+    name: "eggs",
+    kgCo2ePerKg: 2.94,
+  },
+  {
+    name: "cheese",
+    kgCo2ePerKg: 3.02,
+  },
+  {
+    name: "tuna",
+    kgCo2ePerKg: 5.36,
+  },
+  {
+    name: "mackerel",
+    kgCo2ePerKg: 5.36,
+  },
+  {
+    name: "salmon",
+    kgCo2ePerKg: 5.36,
+  },
+  {
+    name: "pork",
+    kgCo2ePerKg: 4.45,
+  },
+];
+
+export { transportData, foodData };
