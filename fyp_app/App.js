@@ -2,6 +2,7 @@ import * as React from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
+import Login from "./navigation/screens/Login";
 import NavBar from "./navigation/NavBar";
 import LogFoodScreen from "./navigation/screens/LogFoodScreen";
 import LogTransportScreen from "./navigation/screens/LogTransportScreen";
@@ -12,6 +13,11 @@ function App() {
   return (
     <NavigationContainer>
       <Stack.Navigator>
+        <Stack.Screen
+          name="Login"
+          component={Login}
+          options={{ title: "Login" }}
+        />
         <Stack.Screen
           name="HomePage"
           component={NavBar}
