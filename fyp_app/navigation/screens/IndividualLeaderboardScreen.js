@@ -1,17 +1,25 @@
 import { StatusBar } from "expo-status-bar";
+import { useEffect, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
+
+import { useIsFocused } from "@react-navigation/native";
 
 import Leaderboard from "react-native-leaderboard";
 
-const data = [
-  { userName: "Sean", highScore: 10 },
-  { userName: "Aaron", highScore: 7 },
-  { userName: "Peadar", highScore: 5 },
-  { userName: "Tim", highScore: 4 },
-  { userName: "Mark", highScore: 2 },
-]; //can also be an object of objects!: data: {a:{}, b:{}}
+export default function IndividualLeaderboardScreen({ route, navigation }) {
+  // const [data, setData] = useState([]);
 
-export default function IndividualLeaderboardScreen() {
+  const data = [
+    { userName: "Aaron", highScore: 7 },
+    { userName: "Peadar", highScore: 5 },
+    { userName: "Tim", highScore: 4 },
+    { userName: "Mark", highScore: 2 },
+  ];
+
+  const { score } = route.params;
+  console.log("Score parameter: " + score);
+  data.push({ userName: "Me", highScore: score });
+  // setData(newData);
   return <Leaderboard data={data} sortBy="highScore" labelBy="userName" />;
 }
 

@@ -25,6 +25,18 @@ export default function HomeScreen({ navigation }) {
 
   const isFocused = useIsFocused();
 
+  function getScoreForTheDay() {
+    let totalEmissions = 0;
+
+    for (let i = 0; i < foodDummyData.length; i++) {
+      totalEmissions += foodDummyData[i].co2e;
+    }
+    for (let i = 0; i < transportDummyData.length; i++) {
+      totalEmissions += transportDummyData[i].co2e;
+    }
+    return totalEmissions;
+  }
+
   // Re-render screen after popping back from log emission screen
   useEffect(() => {}, [isFocused]);
 
@@ -159,7 +171,7 @@ export default function HomeScreen({ navigation }) {
           </ScrollView>
         </View>
       </ScrollView>
-      <View style={{ bottom: 100, flexDirection: "row-reverse" }}>
+      <View style={{ bottom: 200 /*flexDirection: "row-reverse" */ }}>
         {/* <Pressable onPress={() => setModalVisible(true)}> */}
         {/* <Pressable onPress={() => navigation.navigate("Log Food")}> */}
         <Pressable
@@ -201,6 +213,53 @@ export default function HomeScreen({ navigation }) {
               style={[{ fontSize: 30, color: "white", fontWeight: "bold" }]}
             >
               Log Emission +
+            </Text>
+          </View>
+        </Pressable>
+
+        <View style={{ padding: 10 }}></View>
+        {/* Button to Complete day which pushes score to leaderboard */}
+        <Pressable
+          onPress={() => {
+            Alert.alert(
+              "Complete day",
+              "WARNING! Cannot edit day after clicking finish. Are you sure you have logged everything for today?",
+              [
+                {
+                  text: "Cancel",
+                  onPress: () => {
+                    // remove alert
+                  },
+                  // style: "cancel",
+                },
+                {
+                  text: "Finish Day",
+                  onPress: () => {
+                    navigation.navigate("Individual Leaderboard", {
+                      score: getScoreForTheDay(),
+                    });
+                  },
+                },
+              ]
+            );
+          }}
+        >
+          <View
+            style={{
+              paddingHorizontal: 10,
+              backgroundColor: "red",
+              width: 250,
+              height: 70,
+              alignItems: "center",
+              borderRadius: 90,
+              justifyContent: "center",
+              marginHorizontal: 10,
+            }}
+          >
+            <Text
+              style={[{ fontSize: 30, color: "white", fontWeight: "bold" }]}
+            >
+              Finish Day
             </Text>
           </View>
         </Pressable>
