@@ -15,9 +15,19 @@ import LogFoodScreen from "./LogFoodScreen";
 
 import { PieChart } from "react-native-gifted-charts";
 
+import EmissionLogButton from "../../Components/Buttons/EmissionLogButton";
+
 import { useIsFocused } from "@react-navigation/native";
 
+/*
+ *   This dummy data should be replaced with data fetched from database from collections/emission_logs, where userID == uid
+ *   foodData where category == "food"
+ *   transportData where category == "transport"
+ *   uid received after user logs in, need to pass prop of user ID from login to homepage
+ */
 import { foodDummyData, transportDummyData } from "../../dummyData";
+
+let myBackgroundColour = "#F1FBFF";
 
 export default function HomeScreen({ navigation }) {
   const [modalVisible, setModalVisible] = useState(false);
@@ -37,7 +47,10 @@ export default function HomeScreen({ navigation }) {
     return totalEmissions;
   }
 
-  // Re-render screen after popping back from log emission screen
+  /* Re-render screen after popping back from log emission screen
+   * fetch users' emission logs here, because after popping back from log emission, new emission may be added so need to refetch
+   * only fetch again if new emission has been entered, or deleted, or it is a new day
+   */
   useEffect(() => {}, [isFocused]);
 
   const renderLegend = (text, color) => {
@@ -61,7 +74,7 @@ export default function HomeScreen({ navigation }) {
     <View>
       <ScrollView
         showsVerticalScrollIndicator={false}
-        style={{ backgroundColor: "#1cb871" }}
+        style={{ backgroundColor: myBackgroundColour }}
       >
         <View
           style={{
@@ -91,6 +104,7 @@ export default function HomeScreen({ navigation }) {
             strokeColor="white"
             strokeWidth={4}
             donut
+            /* Data here needs to be replaced with total food co2e emissions and total transport co2e emissions */
             data={[
               { value: 30, color: "rgb(84,219,234)" },
               { value: 40, color: "lightgreen" },
@@ -130,6 +144,9 @@ export default function HomeScreen({ navigation }) {
         {/****************************************************************************/}
         {/* Food Log Entries */}
         {/* Maybe make these buttons at a later stage, to allow user to edit/delete entry */}
+
+        {/* Only display heading of Food or Transport, if the entries for the user are not empty? */}
+        {/* If no entries, pie chart will also be empty so need to fill the screen for when no data entered? */}
         <View>
           <ScrollView>
             <Text style={styles.heading}>Food</Text>
@@ -137,13 +154,14 @@ export default function HomeScreen({ navigation }) {
               {foodDummyData.map((food) => {
                 return (
                   <View>
-                    {/* <Pressable onPress={()=>{setButtonPressed(!buttonPressed)}}> */}
-                    <Pressable>
-                      <View style={[styles.logEntry, { flexDirection: "row" }]}>
-                        <Text style={styles.foodName}>{food.name}</Text>
-                        <Text style={styles.co2e}>{food.co2e} gCo2e/kg</Text>
-                      </View>
-                    </Pressable>
+                    <EmissionLogButton
+                      /* icon= */ emissionName={food.name}
+                      co2eValue={food.co2e}
+                      unit={"kgCo2e"}
+                      /* onPress={} */ colour={"white"}
+                      fontSize={20}
+                      iconName={"cutlery"}
+                    />
                   </View>
                 );
               })}
@@ -155,15 +173,14 @@ export default function HomeScreen({ navigation }) {
               {transportDummyData.map((transport) => {
                 return (
                   <View>
-                    {/* <Pressable onPress={()=>{setButtonPressed(!buttonPressed)}}> */}
-                    <Pressable>
-                      <View style={[styles.logEntry, { flexDirection: "row" }]}>
-                        <Text style={styles.foodName}>{transport.name}</Text>
-                        <Text style={styles.co2e}>
-                          {transport.co2e} gCo2e/kg
-                        </Text>
-                      </View>
-                    </Pressable>
+                    <EmissionLogButton
+                      /* icon= */ emissionName={transport.name}
+                      co2eValue={transport.co2e}
+                      unit={"kgCo2e"}
+                      /* onPress={} */ colour={"white"}
+                      fontSize={20}
+                      iconName={"car"}
+                    />
                   </View>
                 );
               })}
@@ -171,7 +188,12 @@ export default function HomeScreen({ navigation }) {
           </ScrollView>
         </View>
       </ScrollView>
-      <View style={{ bottom: 200 /*flexDirection: "row-reverse" */ }}>
+      <View
+        style={{
+          bottom: 500,
+          alignItems: "flex-end" /*flexDirection: "row-reverse" */,
+        }}
+      >
         {/* <Pressable onPress={() => setModalVisible(true)}> */}
         {/* <Pressable onPress={() => navigation.navigate("Log Food")}> */}
         <Pressable
@@ -201,7 +223,7 @@ export default function HomeScreen({ navigation }) {
             style={{
               paddingHorizontal: 10,
               backgroundColor: "green",
-              width: 250,
+              width: 150,
               height: 70,
               alignItems: "center",
               borderRadius: 90,
@@ -248,7 +270,7 @@ export default function HomeScreen({ navigation }) {
             style={{
               paddingHorizontal: 10,
               backgroundColor: "red",
-              width: 250,
+              width: 150,
               height: 70,
               alignItems: "center",
               borderRadius: 90,
@@ -313,7 +335,7 @@ const styles = StyleSheet.create({
   heading: {
     fontSize: 30,
     fontWeight: "bold",
-    color: "white",
+    color: "black",
     padding: 20,
     paddingBottom: 10,
   },

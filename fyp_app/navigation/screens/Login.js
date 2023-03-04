@@ -24,6 +24,7 @@ function Login({ navigation }) {
   const [password, setPassword] = useState("");
 
   function attemptLogin() {
+    navigation.navigate("HomePage");
     const auth = getAuth(app);
     signInWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
@@ -139,7 +140,7 @@ const styles = StyleSheet.create({
     margin: sideMargin,
     marginTop: 40,
     padding: 10,
-    backgroundColor: "orange",
+    backgroundColor: "#2BD928",
     borderRadius: 10,
   },
   loginButtonText: {
