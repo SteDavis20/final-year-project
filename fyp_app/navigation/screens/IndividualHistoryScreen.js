@@ -49,8 +49,8 @@ const leaderboardData = [
 
 export default function IndividualHistoryScreen() {
   return (
-    <View /*style={styles.container}*/>
-      <Text>Individual History Screen!</Text>
+    <View style={{ marginTop: 35 }}>
+      <Text style={styles.heading}>Individual History</Text>
       <StatusBar style="auto" />
       <LineChart
         data={data}
@@ -71,5 +71,12 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     alignItems: "center",
     justifyContent: "center",
+  },
+  heading: {
+    fontSize: 25,
+    fontWeight: "bold",
+    color: "black",
+    padding: 20,
+    alignSelf: "center",
   },
 });

@@ -16,22 +16,30 @@ function App() {
         <Stack.Screen
           name="Login"
           component={Login}
-          options={{ title: "Login" }}
+          options={{
+            headerShown: false,
+          }}
         />
         <Stack.Screen
           name="HomePage"
           component={NavBar}
-          options={{ title: "Home" }}
+          options={{
+            headerShown: false,
+          }}
         />
         <Stack.Screen
           name="Log Food"
           component={LogFoodScreen}
-          options={{ title: "Log Food" }}
+          options={{
+            headerShown: false,
+          }}
         />
         <Stack.Screen
           name="Log Transport"
           component={LogTransportScreen}
-          options={{ title: "Log Transport" }}
+          options={{
+            headerShown: false,
+          }}
         />
       </Stack.Navigator>
     </NavigationContainer>

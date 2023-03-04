@@ -20,6 +20,8 @@ import { foodDummyData, transportDummyData } from "../../dummyData";
 
 import { foodData } from "../../co2Emissions";
 
+let myBackgroundColour = "#F1FBFF";
+
 const portionSizesData = [
   {
     key: 1,
@@ -91,7 +93,7 @@ export default function LogFoodScreen({ navigation }) {
   useEffect(() => {});
 
   return (
-    <ScrollView style={{ backgroundColor: "#1cb871" }}>
+    <ScrollView style={{ backgroundColor: myBackgroundColour }}>
       <Text style={styles.heading}>Please log food below</Text>
       <Text style={styles.heading}>Food type:</Text>
       <SelectDropdown
@@ -293,7 +295,7 @@ const styles = StyleSheet.create({
   heading: {
     fontSize: 30,
     fontWeight: "bold",
-    color: "white",
+    color: "black",
     padding: 20,
   },
   dropdown1ButtonStyle: {

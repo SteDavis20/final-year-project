@@ -71,11 +71,12 @@ export default function HomeScreen({ navigation }) {
   };
 
   return (
-    <View>
+    <View style={{ marginTop: 35 }}>
       <ScrollView
         showsVerticalScrollIndicator={false}
         style={{ backgroundColor: myBackgroundColour }}
       >
+        <Text style={styles.heading}>Home</Text>
         <View
           style={{
             marginVertical: 10,
@@ -338,6 +339,7 @@ const styles = StyleSheet.create({
     color: "black",
     padding: 20,
     paddingBottom: 10,
+    alignSelf: "center",
   },
 });
 

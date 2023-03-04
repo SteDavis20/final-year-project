@@ -67,7 +67,7 @@ function Login({ navigation }) {
   }
 
   return (
-    <View>
+    <View style={{ marginTop: 35 }}>
       {/* <SvgXml xml={logo} width="45" height="45" style={styles.svg} /> */}
       <Text style={styles.heading}>Welcome!</Text>
       <Text style={styles.inputHeading}>Email</Text>
@@ -90,7 +90,6 @@ function Login({ navigation }) {
           placeholder="*********"
         />
       </SafeAreaView>
-
       <View style={styles.loginButton}>
         <Pressable
           onPress={() => {

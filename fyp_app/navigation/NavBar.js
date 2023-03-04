@@ -32,18 +32,33 @@ function NavBar() {
     <Tab.Navigator initialRouteName={homeName}>
       {/* screenOptions goes here to highlight selected screen */}
 
-      <Tab.Screen name={homeName} component={HomeScreen} />
+      <Tab.Screen
+        name={homeName}
+        component={HomeScreen}
+        options={{
+          headerShown: false,
+        }}
+      />
       <Tab.Screen
         name={IndividualLeaderboardName}
         component={IndividualLeaderboardScreen}
+        options={{
+          headerShown: false,
+        }}
       />
       <Tab.Screen
         name={TeamLeaderboardName}
         component={TeamLeaderboardScreen}
+        options={{
+          headerShown: false,
+        }}
       />
       <Tab.Screen
         name={IndividualHistoryName}
         component={IndividualHistoryScreen}
+        options={{
+          headerShown: false,
+        }}
       />
     </Tab.Navigator>
   );

@@ -6,6 +6,10 @@ import { useIsFocused } from "@react-navigation/native";
 
 import Leaderboard from "react-native-leaderboard";
 
+/*
+ *   Is there only 1 individual leaderboard - YES
+ */
+
 export default function IndividualLeaderboardScreen({ route, navigation }) {
   // const [data, setData] = useState([]);
 
@@ -20,7 +24,18 @@ export default function IndividualLeaderboardScreen({ route, navigation }) {
   console.log("Score parameter: " + score);
   data.push({ userName: "Me", highScore: score });
   // setData(newData);
-  return <Leaderboard data={data} sortBy="highScore" labelBy="userName" />;
+  return (
+    <View style={{ marginTop: 35 }}>
+      <Text style={styles.heading}>Individual Leaderboard</Text>
+      <Leaderboard
+        data={data}
+        sortBy="highScore"
+        labelBy="userName"
+        // oddRowColor="green"
+        // evenRowColor="cyan"
+      />
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
@@ -29,5 +44,12 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     alignItems: "center",
     justifyContent: "center",
+  },
+  heading: {
+    fontSize: 25,
+    fontWeight: "bold",
+    color: "black",
+    padding: 20,
+    alignSelf: "center",
   },
 });

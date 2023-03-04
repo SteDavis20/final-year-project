@@ -159,7 +159,7 @@ export default function LogTransportScreen({ navigation }) {
   }
 
   return (
-    <ScrollView style={{ backgroundColor: "purple" }}>
+    <ScrollView style={{ backgroundColor: "#BEFFDC", marginTop: 35 }}>
       <Text style={styles.heading}>Mode of Transport</Text>
       <SelectDropdown
         data={transportTypeData}
@@ -513,7 +513,7 @@ const styles = StyleSheet.create({
   heading: {
     fontSize: 30,
     fontWeight: "bold",
-    color: "white",
+    color: "black",
     padding: 20,
   },
   dropdown1ButtonStyle: {
