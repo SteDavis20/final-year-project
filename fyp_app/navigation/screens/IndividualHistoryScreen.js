@@ -58,7 +58,7 @@ export default function IndividualHistoryScreen() {
         height={220}
         chartConfig={chartConfig}
       />
-      <Text>Need to add spacing here...</Text>
+      <View style={{ margin: 10 }}></View>
       {/* sortBy is what is displayed on RHS, need to sort by date, but display score on RHS, not date */}
       <Leaderboard data={leaderboardData} sortBy="score" labelBy="date" />
     </View>

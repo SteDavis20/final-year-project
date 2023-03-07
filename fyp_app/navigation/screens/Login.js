@@ -13,7 +13,7 @@ import { SvgXml } from "react-native-svg";
 
 import { useEffect, useState } from "react";
 
-import { app } from "../../firebase-config";
+import { database } from "../../firebase-config";
 
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 
@@ -24,46 +24,46 @@ function Login({ navigation }) {
   const [password, setPassword] = useState("");
 
   function attemptLogin() {
-    navigation.navigate("HomePage");
-    const auth = getAuth(app);
-    signInWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
-        const user = userCredential.user;
-        let uniqueUserID = user.uid;
-        navigation.navigate("HomePage");
-        // navigation.navigate("Home", uniqueUserID);
-      })
-      .catch((error) => {
-        if (error.code === "auth/wrong-password") {
-          Alert.alert("Incorrect Login Details!", "Wrong password", [
-            {
-              text: "OK",
-            },
-          ]);
-        } else if (error.code === "auth/invalid-email") {
-          Alert.alert("Incorrect Login Details!", "Invalid email", [
-            {
-              text: "OK",
-            },
-          ]);
-        } else if (error.code === "auth/user-not-found") {
-          Alert.alert(
-            "Incorrect Login Details!",
-            "No account for provided email",
-            [
-              {
-                text: "OK",
-              },
-            ]
-          );
-        } else {
-          Alert.alert("Incorrect Login Details!", "Please try again", [
-            {
-              text: "OK",
-            },
-          ]);
-        }
-      });
+    navigation.navigate("HomePage", { userID: "096TYzjfrxQmmilDooSNe69Ng4g2" });
+    // const auth = getAuth(database);
+    // signInWithEmailAndPassword(auth, email, password)
+    //   .then((userCredential) => {
+    //     const user = userCredential.user;
+    //     let uniqueUserID = user.uid;
+    //     navigation.navigate("HomePage", { userID: uniqueUserID });
+    //     // navigation.navigate("Home", uniqueUserID);
+    //   })
+    //   .catch((error) => {
+    //     if (error.code === "auth/wrong-password") {
+    //       Alert.alert("Incorrect Login Details!", "Wrong password", [
+    //         {
+    //           text: "OK",
+    //         },
+    //       ]);
+    //     } else if (error.code === "auth/invalid-email") {
+    //       Alert.alert("Incorrect Login Details!", "Invalid email", [
+    //         {
+    //           text: "OK",
+    //         },
+    //       ]);
+    //     } else if (error.code === "auth/user-not-found") {
+    //       Alert.alert(
+    //         "Incorrect Login Details!",
+    //         "No account for provided email",
+    //         [
+    //           {
+    //             text: "OK",
+    //           },
+    //         ]
+    //       );
+    //     } else {
+    //       Alert.alert("Incorrect Login Details!", "Please try again", [
+    //         {
+    //           text: "OK",
+    //         },
+    //       ]);
+    //     }
+    //   });
   }
 
   return (

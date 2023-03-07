@@ -19,6 +19,10 @@ import EmissionLogButton from "../../Components/Buttons/EmissionLogButton";
 
 import { useIsFocused } from "@react-navigation/native";
 
+import { collection, query, where, getDocs } from "firebase/firestore";
+
+import database from "../../firebase-config";
+
 /*
  *   This dummy data should be replaced with data fetched from database from collections/emission_logs, where userID == uid
  *   foodData where category == "food"
@@ -29,11 +33,63 @@ import { foodDummyData, transportDummyData } from "../../dummyData";
 
 let myBackgroundColour = "#F1FBFF";
 
-export default function HomeScreen({ navigation }) {
+export default function HomeScreen({ route, navigation }) {
   const [modalVisible, setModalVisible] = useState(false);
   const [buttonPressed, setButtonPressed] = useState(false);
+  const [todaysDate, setTodaysDate] = useState("");
+  const [emissionLogs, setEmissionLogs] = useState([]);
 
   const isFocused = useIsFocused();
+
+  const { userID } = route.params;
+
+  /* When a new day, need to set emissionLogs back to empty */
+  /* useEffect takes a callback function as parameter, cannot put await before this function so immediately invoke nested async function as below */
+  useEffect(() => {
+    /* Only call this fetch when user 1st opens the app */
+    async function getLogs() {
+      if (emissionLogs.length == 0) {
+        setDate();
+        setEmissionLogs(await getEmissionLogsFromDatabase());
+      }
+    }
+    getLogs();
+  }, [todaysDate]);
+
+  /* Firebase date saved as string in the form: 7/3/2023 */
+  function setDate() {
+    var date = new Date().getDate(); //To get the Current Date
+    var month = new Date().getMonth() + 1; //To get the Current Month
+    var year = new Date().getFullYear(); //To get the Current Year
+    // var hours = new Date().getHours(); //To get the Current Hours
+    // var min = new Date().getMinutes(); //To get the Current Minutes
+    // var sec = new Date().getSeconds(); //To get the Current Seconds
+
+    setTodaysDate(
+      // date + "/" + month + "/" + year + " " + hours + ":" + min + ":" + sec
+      date + "/" + month + "/" + year
+    );
+  }
+
+  /*
+   *   Should also be "where("date", "==", insert today's date here)"
+   *   Currently this will fetch every emission ever logged by the user, e.g., Monday, Tuesday, Wednesday etc., will be displayed
+   */
+  async function getEmissionLogsFromDatabase() {
+    return new Promise(async (resolve, reject) => {
+      let databaseEmissionLogs = [];
+      const q = query(
+        collection(database, "emission_logs"),
+        where("userID", "==", userID),
+        where("date", "==", todaysDate)
+      );
+      const querySnapshot = await getDocs(q);
+      querySnapshot.forEach((document) => {
+        databaseEmissionLogs.push(document.data());
+      });
+      resolve(databaseEmissionLogs);
+    });
+  }
 
   function getScoreForTheDay() {
     let totalEmissions = 0;
@@ -150,9 +206,12 @@ export default function HomeScreen({ navigation }) {
         {/* If no entries, pie chart will also be empty so need to fill the screen for when no data entered? */}
         <View>
           <ScrollView>
-            <Text style={styles.heading}>Food</Text>
+            {/* <Text style={styles.heading}>Food</Text> */}
+            <Text style={styles.heading}>Emissions</Text>
             <View>
-              {foodDummyData.map((food) => {
+              {/* {foodDummyData.map((food) => { */}
+
+              {emissionLogs.map((food) => {
                 return (
                   <View>
                     <EmissionLogButton
@@ -169,23 +228,23 @@ export default function HomeScreen({ navigation }) {
             </View>
             {/****************************************************************************/}
             {/* Transport Log Entries */}
-            <Text style={styles.heading}>Transport</Text>
+            {/* <Text style={styles.heading}>Transport</Text>
             <View>
               {transportDummyData.map((transport) => {
                 return (
                   <View>
                     <EmissionLogButton
-                      /* icon= */ emissionName={transport.name}
-                      co2eValue={transport.co2e}
+                      emissionName={transport.name}
                       unit={"kgCo2e"}
-                      /* onPress={} */ colour={"white"}
+                      co2eValue={transport.co2e}
+                      colour={"white"}
                       fontSize={20}
                       iconName={"car"}
                     />
                   </View>
                 );
               })}
-            </View>
+            </View> */}
           </ScrollView>
         </View>
       </ScrollView>
@@ -199,25 +258,27 @@ export default function HomeScreen({ navigation }) {
         {/* <Pressable onPress={() => navigation.navigate("Log Food")}> */}
         <Pressable
           onPress={() => {
-            Alert.alert(
-              "Log Type",
-              "Select emission log type,\n SHOULD BE ABLE TO CANCEL IF YOU HIT THIS BY ACCIDENT!",
-              [
-                {
-                  text: "Food",
-                  onPress: () => {
-                    navigation.navigate("Log Food");
-                  },
-                  // style: "cancel",
+            Alert.alert("Log Emission Type", "", [
+              {
+                text: "Food",
+                onPress: () => {
+                  navigation.navigate("Log Food");
                 },
-                {
-                  text: "Transport",
-                  onPress: () => {
-                    navigation.navigate("Log Transport");
-                  },
+                // style: "cancel",
+              },
+              {
+                text: "Transport",
+                onPress: () => {
+                  navigation.navigate("Log Transport");
                 },
-              ]
-            );
+              },
+              {
+                text: "Cancel",
+                onPress: () => {
+                  // do nothing
+                },
+              },
+            ]);
           }}
         >
           <View
@@ -245,7 +306,7 @@ export default function HomeScreen({ navigation }) {
         <Pressable
           onPress={() => {
             Alert.alert(
-              "Complete day",
+              "Complete Day",
               "WARNING! Cannot edit day after clicking finish. Are you sure you have logged everything for today?",
               [
                 {
@@ -283,6 +344,32 @@ export default function HomeScreen({ navigation }) {
               style={[{ fontSize: 30, color: "white", fontWeight: "bold" }]}
             >
               Finish Day
+            </Text>
+          </View>
+        </Pressable>
+        <View style={{ padding: 10 }}></View>
+        {/* Button to Complete day which pushes score to leaderboard */}
+        <Pressable
+          onPress={() => {
+            setDate();
+          }}
+        >
+          <View
+            style={{
+              paddingHorizontal: 10,
+              backgroundColor: "red",
+              width: 150,
+              height: 70,
+              alignItems: "center",
+              borderRadius: 90,
+              justifyContent: "center",
+              marginHorizontal: 10,
+            }}
+          >
+            <Text
+              style={[{ fontSize: 30, color: "white", fontWeight: "bold" }]}
+            >
+              Date!
             </Text>
           </View>
         </Pressable>

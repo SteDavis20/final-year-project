@@ -28,7 +28,12 @@ const Tab = createBottomTabNavigator();
 // areachart
 // see: https://oblador.github.io/react-native-vector-icons/
 
-function NavBar() {
+/*
+ * Need to pass userID prop to Home page after logging in
+ */
+function NavBar({ route, navigation }) {
+  const { userID } = route.params; // Received from Login page
+
   return (
     <Tab.Navigator
       initialRouteName={homeName}
@@ -63,6 +68,7 @@ function NavBar() {
       <Tab.Screen
         name={homeName}
         component={HomeScreen}
+        initialParams={{ userID: userID }}
         options={{
           headerShown: false,
         }}
@@ -102,22 +108,3 @@ const styles = StyleSheet.create({
 });
 
 export default NavBar;
-
-// Add icons to nav bar
-// tabBarIcon: ({ focused, color, size }) => {
-//   let iconName;
-
-//   if (route.name === 'Home') {
-//     iconName = focused
-//       ? 'ios-information-circle'
-//       : 'ios-information-circle-outline';
-//   } else if (route.name === 'Settings') {
-//     iconName = focused ? 'ios-list' : 'ios-list-outline';
-//   }
-
-//   // You can return any component that you like here!
-//   return <Ionicons name={iconName} size={size} color={color} />;
-// },
-// tabBarActiveTintColor: 'tomato',
-// tabBarInactiveTintColor: 'gray',
-// })}

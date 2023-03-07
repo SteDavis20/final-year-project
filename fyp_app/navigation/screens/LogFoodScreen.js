@@ -13,8 +13,8 @@ import {
 import { useEffect, useState } from "react";
 
 import FontAwesome from "react-native-vector-icons/FontAwesome";
-import Ionicons from "react-native-vector-icons/Ionicons";
 import SelectDropdown from "react-native-select-dropdown";
+import Icon from "react-native-vector-icons/FontAwesome";
 import { NavigationContainer } from "@react-navigation/native";
 import { foodDummyData, transportDummyData } from "../../dummyData";
 
@@ -130,7 +130,7 @@ export default function LogFoodScreen({ navigation }) {
           style={styles.dropdown1ButtonStyle}
           onChangeText={setPortionSize}
           value={portionSize}
-          placeholder="useless placeholder"
+          placeholder="useless placeholder" // need to move this text into center
           keyboardType="numeric"
         />
       </SafeAreaView>
@@ -306,6 +306,8 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#444",
     alignSelf: "flex-end",
+    marginRight: 20,
+    marginLeft: 20,
   },
   dropdown1ButtonTxtStyle: { color: "#444", textAlign: "left" },
   dropdown1DropdownStyle: { backgroundColor: "#EFEFEF" },

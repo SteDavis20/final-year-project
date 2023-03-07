@@ -1,6 +1,6 @@
 import { StatusBar } from "expo-status-bar";
 import { useEffect, useState } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View, Alert } from "react-native";
 
 import { useIsFocused } from "@react-navigation/native";
 
@@ -20,7 +20,19 @@ export default function IndividualLeaderboardScreen({ route, navigation }) {
     { userName: "Mark", highScore: 2 },
   ];
 
-  const { score } = route.params;
+  const score = 11;
+  // if (route.name == "Home") {
+  //   score = route.params;
+  // } else {
+  //   score = 10;
+  // }
+
+  // Alert.alert("Score parameter: ", score, [
+  // {
+  // text: "OK",
+  // },
+  // ]);
+
   console.log("Score parameter: " + score);
   data.push({ userName: "Me", highScore: score });
   // setData(newData);
