@@ -48,13 +48,13 @@ export default function HomeScreen({ route, navigation }) {
   useEffect(() => {
     /* Only call this fetch when user 1st opens the app */
     async function getLogs() {
-      if (emissionLogs.length == 0) {
-        setDate();
-        setEmissionLogs(await getEmissionLogsFromDatabase());
-      }
+      // if (emissionLogs.length == 0) {
+      setDate();
+      setEmissionLogs(await getEmissionLogsFromDatabase());
+      // }
     }
     getLogs();
-  }, [todaysDate]);
+  }, [todaysDate, isFocused]);
 
   /* Firebase date saved as string in the form: 7/3/2023 */
   function setDate() {
@@ -262,14 +262,14 @@ export default function HomeScreen({ route, navigation }) {
               {
                 text: "Food",
                 onPress: () => {
-                  navigation.navigate("Log Food");
+                  navigation.navigate("Log Food", { userID: userID });
                 },
                 // style: "cancel",
               },
               {
                 text: "Transport",
                 onPress: () => {
-                  navigation.navigate("Log Transport");
+                  navigation.navigate("Log Transport", { userID: userID });
                 },
               },
               {

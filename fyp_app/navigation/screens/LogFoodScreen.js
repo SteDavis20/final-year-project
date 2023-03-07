@@ -18,7 +18,10 @@ import Icon from "react-native-vector-icons/FontAwesome";
 import { NavigationContainer } from "@react-navigation/native";
 import { foodDummyData, transportDummyData } from "../../dummyData";
 
+import { collection, addDoc, doc, setDoc, Timestamp } from "firebase/firestore";
+
 import { foodData } from "../../co2Emissions";
+import database from "../../firebase-config";
 
 let myBackgroundColour = "#F1FBFF";
 
@@ -41,12 +44,14 @@ const portionSizesData = [
   },
 ];
 
-export default function LogFoodScreen({ navigation }) {
+export default function LogFoodScreen({ route, navigation }) {
   const [foodSelected, setFoodSelected] = useState("");
   const [portionSize, setPortionSize] = useState("");
   const [portionUnitSelected, setPortionUnitSelected] = useState("");
 
   const [refreshPage, setRefreshPage] = useState(false); // used to automatically refresh page
+
+  const { userID } = route.params;
 
   useEffect(() => {}, [refreshPage]);
 
@@ -79,8 +84,28 @@ export default function LogFoodScreen({ navigation }) {
     return totalEmissions;
   }
 
-  function addLogToHomepage(log) {
-    foodDummyData.push(log);
+  async function addLogToDatabase(log) {
+    const docData = {
+      category: "food",
+      co2e: calculateTotalEmissions(),
+      date: getTodaysDate(),
+      name: foodSelected,
+      portionSize: portionSize,
+      portionUnit: portionUnitSelected,
+      userID: userID,
+    };
+
+    // Add a new document where firebase auto-generate unique id.
+    const docRef = await addDoc(collection(database, "emission_logs"), docData);
+    console.log("Document written with ID: ", docRef.id);
+    // foodDummyData.push(log);
+  }
+
+  function getTodaysDate() {
+    let date = new Date().getDate(); //To get the Current Date
+    let month = new Date().getMonth() + 1; //To get the Current Month
+    let year = new Date().getFullYear(); //To get the Current Year
+    return date + "/" + month + "/" + year;
   }
 
   function resetData() {
@@ -89,7 +114,7 @@ export default function LogFoodScreen({ navigation }) {
     setPortionUnitSelected("");
   }
 
-  // Update food selected with new value to pass to addLogToHomepage()
+  // Update food selected with new value to pass to addLogToDatabase()
   useEffect(() => {});
 
   return (
@@ -237,12 +262,7 @@ export default function LogFoodScreen({ navigation }) {
               {
                 text: "Continue",
                 onPress: () => {
-                  let log = {
-                    id: foodDummyData.length + 1,
-                    name: foodSelected,
-                    co2e: calculateTotalEmissions(),
-                  };
-                  addLogToHomepage(log);
+                  addLogToDatabase();
                   navigation.pop();
                 },
               },
