@@ -94,12 +94,18 @@ export default function HomeScreen({ route, navigation }) {
   function getScoreForTheDay() {
     let totalEmissions = 0;
 
-    for (let i = 0; i < foodDummyData.length; i++) {
-      totalEmissions += foodDummyData[i].co2e;
+    for (let i = 0; i < emissionLogs.length; i++) {
+      totalEmissions += emissionLogs[i].co2e;
     }
-    for (let i = 0; i < transportDummyData.length; i++) {
-      totalEmissions += transportDummyData[i].co2e;
-    }
+
+    /* If separating into Food and Transport emissions */
+    // for (let i = 0; i < foodDummyData.length; i++) {
+    //   totalEmissions += foodDummyData[i].co2e;
+    // }
+
+    // for (let i = 0; i < transportDummyData.length; i++) {
+    //   totalEmissions += transportDummyData[i].co2e;
+    // }
     return totalEmissions;
   }
 

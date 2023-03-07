@@ -13,6 +13,10 @@ import Leaderboard from "react-native-leaderboard";
 export default function IndividualLeaderboardScreen({ route, navigation }) {
   // const [data, setData] = useState([]);
 
+  /*
+   * Get scores of everyone else
+   * Should leaderboard show accumulated score over time, or just the score for today?
+   */
   const data = [
     { userName: "Aaron", highScore: 7 },
     { userName: "Peadar", highScore: 5 },
@@ -20,18 +24,27 @@ export default function IndividualLeaderboardScreen({ route, navigation }) {
     { userName: "Mark", highScore: 2 },
   ];
 
-  const score = 11;
-  // if (route.name == "Home") {
-  //   score = route.params;
-  // } else {
-  //   score = 10;
-  // }
-
-  // Alert.alert("Score parameter: ", score, [
-  // {
-  // text: "OK",
-  // },
-  // ]);
+  let score = 11;
+  try {
+    score = route.params.score;
+    // Alert.alert(
+    //   "Score param exists: ",
+    //   score[
+    //     {
+    //       text: "OK",
+    //     }
+    //   ]
+    // );
+  } catch (error) {
+    // Alert.alert(
+    //   "No score param!",
+    //   ""[
+    //     {
+    //       text: "OK",
+    //     }
+    //   ]
+    // );
+  }
 
   console.log("Score parameter: " + score);
   data.push({ userName: "Me", highScore: score });
