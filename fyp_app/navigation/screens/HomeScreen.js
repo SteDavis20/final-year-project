@@ -106,7 +106,21 @@ export default function HomeScreen({ route, navigation }) {
     // for (let i = 0; i < transportDummyData.length; i++) {
     //   totalEmissions += transportDummyData[i].co2e;
     // }
-    return totalEmissions;
+
+    /* Need to come up with more accurate scores at later stage */
+    let score = 0;
+    if (totalEmissions <= 300) {
+      score = 10;
+    } else if (totalEmissions <= 400) {
+      score = 8;
+    } else if (totalEmissions <= 500) {
+      score = 6;
+    } else if (totalEmissions <= 600) {
+      score = 4;
+    } else {
+      score = 2;
+    }
+    return score;
   }
 
   /* Re-render screen after popping back from log emission screen
@@ -350,32 +364,6 @@ export default function HomeScreen({ route, navigation }) {
               style={[{ fontSize: 30, color: "white", fontWeight: "bold" }]}
             >
               Finish Day
-            </Text>
-          </View>
-        </Pressable>
-        <View style={{ padding: 10 }}></View>
-        {/* Button to Complete day which pushes score to leaderboard */}
-        <Pressable
-          onPress={() => {
-            setDate();
-          }}
-        >
-          <View
-            style={{
-              paddingHorizontal: 10,
-              backgroundColor: "red",
-              width: 150,
-              height: 70,
-              alignItems: "center",
-              borderRadius: 90,
-              justifyContent: "center",
-              marginHorizontal: 10,
-            }}
-          >
-            <Text
-              style={[{ fontSize: 30, color: "white", fontWeight: "bold" }]}
-            >
-              Date!
             </Text>
           </View>
         </Pressable>
