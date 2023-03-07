@@ -16,6 +16,9 @@ import { transportData } from "../../co2Emissions";
 
 import { foodDummyData, transportDummyData } from "../../dummyData";
 
+import database from "../../firebase-config";
+import { collection, addDoc, doc, setDoc, Timestamp } from "firebase/firestore";
+
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import SelectDropdown from "react-native-select-dropdown";
@@ -96,7 +99,7 @@ const unitsOfDistanceData = [
   },
 ];
 
-export default function LogTransportScreen({ navigation }) {
+export default function LogTransportScreen({ route, navigation }) {
   const [modeOfTransportSelected, setModeOfTransportSelected] = useState("");
   const [carSizeSelected, setCarSizeSelected] = useState("");
   const [fuelTypeSelected, setFuelTypeSelected] = useState("");
@@ -105,17 +108,20 @@ export default function LogTransportScreen({ navigation }) {
   const [unitsOfDistanceSelected, setUnitsOfDistanceSelected] = useState("");
   const [mapIdentifier, setMapIdentifier] = useState("");
 
+  const { userID } = route.params;
+
   useEffect(() => {
     if (mapIdentifier != "") {
-      console.log("Should work now!");
-      console.log("Map identifier: " + mapIdentifier);
-      let log = {
-        id: transportDummyData.length + 1,
-        name: mapIdentifier,
-        co2e: calculateTotalEmissions(),
-      };
-      console.log("New log: " + JSON.stringify(log));
-      addLogToHomepage(log);
+      //   console.log("Should work now!");
+      //   console.log("Map identifier: " + mapIdentifier);
+      //   let log = {
+      //     id: transportDummyData.length + 1,
+      //     name: mapIdentifier,
+      //     co2e: calculateTotalEmissions(),
+      //   };
+      //   console.log("New log: " + JSON.stringify(log));
+      addLogToDatabase();
+      //   addLogToHomepage(log);
     }
   }, [mapIdentifier]);
 
@@ -154,8 +160,35 @@ export default function LogTransportScreen({ navigation }) {
     return totalEmissions;
   }
 
-  function addLogToHomepage(log) {
-    transportDummyData.push(log);
+  /*
+   * Can add other info depending on mode of transport selected.
+   * For example, car would include fuel type, car size
+   */
+  async function addLogToDatabase() {
+    const docData = {
+      category: "transport",
+      co2e: calculateTotalEmissions(),
+      date: getTodaysDate(),
+      name: modeOfTransportSelected.toLowerCase(),
+      distanceTravelled: distanceEntered,
+      unitOfDistance: unitsOfDistanceSelected,
+      // carSize: carSizeSelected,
+      // fuelType: fuelTypeSelected,
+      // numberOfPassengers: numberOfPassengers,
+      userID: userID,
+    };
+
+    // Add a new document where firebase auto-generate unique id.
+    const docRef = await addDoc(collection(database, "emission_logs"), docData);
+    console.log("Document written with ID: ", docRef.id);
+    // foodDummyData.push(log);
+  }
+
+  function getTodaysDate() {
+    let date = new Date().getDate(); //To get the Current Date
+    let month = new Date().getMonth() + 1; //To get the Current Month
+    let year = new Date().getFullYear(); //To get the Current Year
+    return date + "/" + month + "/" + year;
   }
 
   return (
@@ -454,13 +487,6 @@ export default function LogTransportScreen({ navigation }) {
                       modeOfTransportSelected.toLowerCase();
                     setMapIdentifier(modeOfTransportDecapitalised);
                   }
-                  // let log = {
-                  //   id: transportDummyData.length + 1,
-                  //   name: mapIdentifier,
-                  //   co2e: calculateTotalEmissions(),
-                  // };
-                  // console.log("New log: " + JSON.stringify(log));
-                  // addLogToHomepage(log);
                   navigation.pop();
                 },
               },
