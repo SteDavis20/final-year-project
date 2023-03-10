@@ -43,15 +43,10 @@ export default function IndividualLeaderboardScreen({ route, navigation }) {
   useEffect(() => {
     async function getScores() {
       setDate();
-      setLeaderboardScores(await getLeaderboardScores()); // getLeaderboardScores returns [] instead of [...]
-      console.log(
-        "======================================================================="
-      );
-      // console.log("useEffect Date: " + yesterdaysDate);
-      // console.log("useEffect Leaderboard Scores: " + leaderboardScores);
+      await getLeaderboardScores(); // getLeaderboardScores returns [] instead of [...]
     }
     getScores();
-  }, []);
+  }, [yesterdaysDate]);
 
   /*
    * Works
@@ -81,7 +76,6 @@ export default function IndividualLeaderboardScreen({ route, navigation }) {
     let newEntry = "";
     await Promise.all(
       userDocuments.map(async (userDocument) => {
-        console.log("User document data: ", userDocument.data());
         newEntry = {
           name: userDocument.data().name,
           score: scoreDocScore,
@@ -96,49 +90,38 @@ export default function IndividualLeaderboardScreen({ route, navigation }) {
      * Get score documents where date = yesterdaysDate
      */
     let scoreDocuments = await getScoreDocuments();
+    // const data = [...leaderboardScores];
     let data = [];
 
-    // for (const scoreDoc of scoreDocuments) {
-    //   console.log("score doc1");
-    // }
-
+    /*
+     *   Get user documents where scoreDoc.id = userDoc.id
+     */
     await Promise.all(
       scoreDocuments.map(async (scoreDocument) => {
-        console.log("Score document data: ", scoreDocument.data());
         let tempData = await getUserDocuments(
           scoreDocument.data().value,
           scoreDocument.data().userID
         );
-        console.log("Returned data: ", tempData);
         data.push(tempData);
       })
     );
-    console.log("Leaderboard data: ", data);
-    /*
-     *   Get user documents where scoreDoc.id = userDoc.id
-     */
-    // let userDocuments = await getUserDocuments("096TYzjfrxQmmilDooSNe69Ng4g2");
-    // userDocuments.forEach((userDocument) => {
-    // console.log("User document data: ", userDocument.data());
-    // });
-    console.log("Last!!!");
-    return data;
-    /*
-     *   Combine score document's value and user document's name
-     */
+    setLeaderboardScores(data);
   }
 
   return (
     <View style={{ marginTop: 35 }}>
-      <Text style={styles.heading}>Individual Leaderboard</Text>
-      <Leaderboard
-        data={leaderboardScores}
-        sortBy="score"
-        labelBy="name"
-        // oddRowColor="green"
-        // evenRowColor="cyan"
-      />
-      <Button title="title" onPress={() => {}} />
+      {leaderboardScores.length > 0 && (
+        <View>
+          <Text style={styles.heading}>Individual Leaderboard</Text>
+          <Leaderboard
+            data={leaderboardScores}
+            sortBy="score"
+            labelBy="name"
+            // oddRowColor="green"
+            // evenRowColor="cyan"
+          />
+        </View>
+      )}
     </View>
   );
 }
