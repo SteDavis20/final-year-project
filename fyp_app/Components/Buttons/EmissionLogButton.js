@@ -11,7 +11,6 @@ import {
 } from "react-native";
 import React, { useEffect, useState } from "react";
 
-// import Ionicons from "react-native-vector-icons/Ionicons";
 import Icon from "react-native-vector-icons/FontAwesome";
 
 let myBackgroundColour = "#F1FBFF";
@@ -91,8 +90,9 @@ const styles = StyleSheet.create({
   foodName: {
     alignItems: "left",
     width: "50%",
+    paddingLeft: 20,
   },
-  co2e: { textAlign: "right", width: "50%" },
+  co2e: { textAlign: "right", width: "50%", paddingRight: 20 },
 
   // styling for log entries on homepage
   icon: {},
