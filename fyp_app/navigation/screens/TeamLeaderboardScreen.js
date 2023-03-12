@@ -1,7 +1,19 @@
 import { StatusBar } from "expo-status-bar";
 import { StyleSheet, Text, View } from "react-native";
+import { useEffect, useState } from "react";
 
 import Leaderboard from "react-native-leaderboard";
+
+import {
+  collection,
+  query,
+  where,
+  getDocs,
+  doc,
+  getDoc,
+} from "firebase/firestore";
+
+import database from "../../firebase-config";
 
 const data = [
   { userName: "Team1", highScore: 15 },
@@ -29,13 +41,83 @@ let myBackgroundColour = "#F1FBFF";
  */
 
 export default function TeamLeaderboardScreen() {
+  const [leaderboardScores, setLeaderboardScores] = useState([]);
+  const [yesterdaysDate, setYesterdaysDate] = useState("");
+
+  useEffect(() => {
+    async function getScores() {
+      setDate();
+      await getTeamScores();
+    }
+    getScores();
+  }, [yesterdaysDate]); // change in state of the date will rerender, which will display newly loaded leaderboard data
+
+  /*
+   *   If today is 1st of month, e.g., 01/05/23, will this return 30/04/23, or 31/05/23?
+   */
+  function setDate() {
+    var date = new Date().getDate() - 1;
+    var month = new Date().getMonth() + 1;
+    var year = new Date().getFullYear();
+    setYesterdaysDate(date + "/" + month + "/" + year);
+  }
+
+  /* Fetch all team documents from team collection in firebase */
+  async function getTeamDocuments() {
+    const q = query(collection(database, "teams"));
+    const querySnapshot = await getDocs(q);
+    return querySnapshot.docs; // .docs is the array of team documents
+  }
+
+  async function getTeamScores() {
+    let teamScores = [];
+    /* Fetch all team documents from team collection in firebase */
+    let teamDocuments = await getTeamDocuments();
+    /* For each team document, use the userIDs in the userID array to fetch the score for each user in the scores document,
+     * and sum these user scores together to get the overall team score.
+     * Then push new object to teamScores array, containing the name of the team and the combined team score.
+     */
+    await Promise.all(
+      teamDocuments.map(async (teamDocument) => {
+        let userIDs = teamDocument.data().userIDs;
+        /* Fetch score for each user in the team using userID */
+        let teamScore = 0;
+        await Promise.all(
+          userIDs.map(async (userID) => {
+            const q = query(
+              collection(database, "scores"),
+              where("userID", "==", userID),
+              where("date", "==", yesterdaysDate)
+            );
+            /* This will only ever return 1 document because user cannot have 2 scores for the 1 day! */
+            const querySnapshot = await getDocs(q);
+            let userScoresDocs = querySnapshot.docs;
+            // if userScoresDocs.length > 2 then the team of 2 people somehow have 2 scores for the day, if < 2 then not both people in
+            // the team submitted a score.
+            let userScoreDoc = userScoresDocs[0];
+            /* Get value from the score document */
+            let userScore = userScoreDoc.data().value;
+            teamScore += userScore;
+          })
+        );
+        /* Push new object with team name and score to the leaderboardData array */
+        teamScores.push({
+          name: teamDocument.data().name,
+          score: teamScore,
+        });
+      })
+    );
+    setLeaderboardScores(teamScores); // this does not change state of leaderboardScores so does not rerender automatically, but yesterdaysDate will suffice.
+    return;
+  }
+
   return (
     <View style={{ marginTop: 35 }}>
       <Text style={styles.heading}>Team Leaderboard</Text>
       <Leaderboard
-        data={data}
-        sortBy="highScore"
-        labelBy="userName"
+        data={leaderboardScores}
+        sortBy="score"
+        labelBy="name"
         containerStyle={{ backgroundColor: "green" }}
       />
     </View>

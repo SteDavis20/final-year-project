@@ -20,7 +20,6 @@ import {
 } from "firebase/firestore";
 
 import database from "../../firebase-config";
-import { resolve } from "q";
 
 export default function IndividualLeaderboardScreen({ route, navigation }) {
   const [leaderboardScores, setLeaderboardScores] = useState([]);
@@ -62,29 +61,24 @@ export default function IndividualLeaderboardScreen({ route, navigation }) {
     return querySnapshot.docs; // .docs is the array
   }
 
-  /*
-   *
-   */
-  async function getUserDocuments(scoreDocScore, scoreDocUserID) {
-    /* Gets user scores, but not user's name, only user's ID */
-    const q = query(
-      collection(database, "users"),
-      where("userID", "==", scoreDocUserID)
-    );
-    /* Get score value and userID */
-    const userDocuments = (await getDocs(q)).docs;
-    let newEntry = "";
-    await Promise.all(
-      userDocuments.map(async (userDocument) => {
-        newEntry = {
-          name: userDocument.data().name,
-          score: scoreDocScore,
-        };
-      })
-    );
-    return newEntry;
+  async function getUserDocument(scoreDocScore, scoreDocUserID) {
+    /* Get user document where the uid of the user document == user id stored in score document */
+    const docRef = doc(database, "users", scoreDocUserID);
+    const userDocument = await getDoc(docRef);
+
+    if (userDocument.exists()) {
+      let newEntry = "";
+      newEntry = {
+        name: userDocument.data().name,
+        score: scoreDocScore,
+      };
+      return newEntry;
+    } else {
+      return;
+    }
   }
 
+  /* UserID for user is now found by the document ID, there is not userID field in the user document anymore. */
   async function getLeaderboardScores() {
     /*
      * Get score documents where date = yesterdaysDate
@@ -98,7 +92,7 @@ export default function IndividualLeaderboardScreen({ route, navigation }) {
      */
     await Promise.all(
       scoreDocuments.map(async (scoreDocument) => {
-        let tempData = await getUserDocuments(
+        let tempData = await getUserDocument(
           scoreDocument.data().value,
           scoreDocument.data().userID
         );
@@ -110,17 +104,15 @@ export default function IndividualLeaderboardScreen({ route, navigation }) {
 
   return (
     <View style={{ marginTop: 35 }}>
+      <Text style={styles.heading}>Individual Leaderboard</Text>
       {leaderboardScores.length > 0 && (
-        <View>
-          <Text style={styles.heading}>Individual Leaderboard</Text>
-          <Leaderboard
-            data={leaderboardScores}
-            sortBy="score"
-            labelBy="name"
-            // oddRowColor="green"
-            // evenRowColor="cyan"
-          />
-        </View>
+        <Leaderboard
+          data={leaderboardScores}
+          sortBy="score"
+          labelBy="name"
+          // oddRowColor="green"
+          // evenRowColor="cyan"
+        />
       )}
     </View>
   );

@@ -24,7 +24,7 @@ function Login({ navigation }) {
   const [password, setPassword] = useState("");
 
   function attemptLogin() {
-    navigation.navigate("HomePage", { userID: "096TYzjfrxQmmilDooSNe69Ng4g2" });
+    navigation.navigate("HomePage", { userID: "Ky0lVuXZJbTZhp9kAj5vkTZOa8T2" });
     // const auth = getAuth(database);
     // signInWithEmailAndPassword(auth, email, password)
     //   .then((userCredential) => {
