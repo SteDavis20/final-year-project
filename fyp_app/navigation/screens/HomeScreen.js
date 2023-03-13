@@ -19,7 +19,15 @@ import EmissionLogButton from "../../Components/Buttons/EmissionLogButton";
 
 import { useIsFocused } from "@react-navigation/native";
 
-import { collection, query, where, getDocs } from "firebase/firestore";
+import {
+  collection,
+  query,
+  where,
+  getDocs,
+  doc,
+  setDoc,
+  addDoc,
+} from "firebase/firestore";
 
 import database from "../../firebase-config";
 
@@ -38,6 +46,8 @@ export default function HomeScreen({ route, navigation }) {
   const [buttonPressed, setButtonPressed] = useState(false);
   const [todaysDate, setTodaysDate] = useState("");
   const [emissionLogs, setEmissionLogs] = useState([]);
+  const [checkedScoreGeneration, setCheckedScoreGeneration] = useState(false);
+  const [yesterdaysDate, setYesterdaysDate] = useState("");
 
   const isFocused = useIsFocused();
 
@@ -61,14 +71,22 @@ export default function HomeScreen({ route, navigation }) {
     var date = new Date().getDate(); //To get the Current Date
     var month = new Date().getMonth() + 1; //To get the Current Month
     var year = new Date().getFullYear(); //To get the Current Year
-    // var hours = new Date().getHours(); //To get the Current Hours
-    // var min = new Date().getMinutes(); //To get the Current Minutes
-    // var sec = new Date().getSeconds(); //To get the Current Seconds
 
     setTodaysDate(
       // date + "/" + month + "/" + year + " " + hours + ":" + min + ":" + sec
       date + "/" + month + "/" + year
     );
+  }
+
+  /*
+   *   If today is 1st of month, e.g., 01/05/23, will this return 30/04/23, or 31/05/23?
+   */
+  function setYesterdaysDateHelper() {
+    var date = new Date().getDate() - 1;
+    var month = new Date().getMonth() + 1;
+    var year = new Date().getFullYear();
+
+    setYesterdaysDate(date + "/" + month + "/" + year);
   }
 
   /*
@@ -123,11 +141,82 @@ export default function HomeScreen({ route, navigation }) {
     return score;
   }
 
-  /* Re-render screen after popping back from log emission screen
-   * fetch users' emission logs here, because after popping back from log emission, new emission may be added so need to refetch
-   * only fetch again if new emission has been entered, or deleted, or it is a new day
+  /*
+   * When page first renders, check if scores exist, if scores exist, do nothing, if scores do not exist, generate the scores and push to firebase
+   *
    */
-  useEffect(() => {}, [isFocused]);
+  useEffect(() => {
+    async function generateScores() {
+      // if (checkedScoreGeneration == false) {
+      setYesterdaysDateHelper();
+      await checkScoresExist();
+      // setCheckedScoreGeneration(true);
+      // }
+    }
+    generateScores();
+  }, [isFocused, yesterdaysDate]);
+
+  /* fetch documents from scores collection, if size <= 0 for yesterdays date, then generate scores for each user and push to firebase
+   * if size of querySnapshot > 0, this means scores have already been generated, so do nothing, i.e., return
+   */
+  async function checkScoresExist() {
+    /* Get score documents */
+    const q = query(
+      collection(database, "scores"),
+      where("date", "==", yesterdaysDate)
+    );
+    const scoreDocuments = (await getDocs(q)).docs;
+    if (scoreDocuments.length <= 0) {
+      console.log(
+        "No score documents for yesterday's date of ",
+        yesterdaysDate
+      );
+      await generateUserScores();
+    }
+    return;
+  }
+
+  /* Creates and pushes score document for each user for the previous day to firebase */
+  async function generateUserScores() {
+    /* Get emission logs from firebase where date == yesterdaysDate */
+    /* Get emmision log documents */
+    const q = query(
+      collection(database, "emission_logs"),
+      where("date", "==", yesterdaysDate)
+    );
+    const emissionLogDocuments = (await getDocs(q)).docs;
+    /* Iterate through emission log documents, adding the emission value to that user's sum */
+    let data = [];
+    /* get co2e and the userID of the emission log */
+    /* if array.contains userID, add co2e to total for that user, else add new object to the array with userID and co2e as the total score */
+    emissionLogDocuments.map((emissionLogDocument) => {
+      let co2e = emissionLogDocument.data().co2e;
+      let userID = emissionLogDocument.data().userID;
+      const key = "userID";
+      let index = data.findIndex((obj) => {
+        return obj.hasOwnProperty(key) && obj[key] == userID;
+      });
+      if (index != -1) {
+        // user exists, add co2e to user's score
+        let prevScore = data[index].score;
+        data[index] = { userID: userID, score: prevScore + co2e };
+      } else {
+        // user does not exist, add userID and co2e as score to the data
+        data.push({ userID: userID, score: co2e });
+      }
+    });
+    /* After iterating through all emmision log documents, create a score document with yesterdaysDate, the userID and the user's score for the day */
+    await Promise.all(
+      data.map(async (userScore) => {
+        // Add a new document with auto generated id.
+        const docRef = await addDoc(collection(database, "scores"), {
+          date: yesterdaysDate,
+          userID: userScore.userID,
+          value: userScore.score,
+        });
+      })
+    );
+  }
 
   const renderLegend = (text, color) => {
     return (
@@ -317,53 +406,6 @@ export default function HomeScreen({ route, navigation }) {
               style={[{ fontSize: 30, color: "white", fontWeight: "bold" }]}
             >
               Log Emission +
-            </Text>
-          </View>
-        </Pressable>
-
-        <View style={{ padding: 10 }}></View>
-        {/* Button to Complete day which pushes score to leaderboard */}
-        <Pressable
-          onPress={() => {
-            Alert.alert(
-              "Complete Day",
-              "WARNING! Cannot edit day after clicking finish. Are you sure you have logged everything for today?",
-              [
-                {
-                  text: "Cancel",
-                  onPress: () => {
-                    // remove alert
-                  },
-                  // style: "cancel",
-                },
-                {
-                  text: "Finish Day",
-                  onPress: () => {
-                    navigation.navigate("Individual Leaderboard", {
-                      score: getScoreForTheDay(),
-                    });
-                  },
-                },
-              ]
-            );
-          }}
-        >
-          <View
-            style={{
-              paddingHorizontal: 10,
-              backgroundColor: "red",
-              width: 150,
-              height: 70,
-              alignItems: "center",
-              borderRadius: 90,
-              justifyContent: "center",
-              marginHorizontal: 10,
-            }}
-          >
-            <Text
-              style={[{ fontSize: 30, color: "white", fontWeight: "bold" }]}
-            >
-              Finish Day
             </Text>
           </View>
         </Pressable>

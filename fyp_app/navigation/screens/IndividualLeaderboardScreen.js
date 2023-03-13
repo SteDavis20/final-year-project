@@ -47,9 +47,6 @@ export default function IndividualLeaderboardScreen({ route, navigation }) {
     getScores();
   }, [yesterdaysDate]);
 
-  /*
-   * Works
-   */
   async function getScoreDocuments() {
     /* Gets user scores, but not user's name, only user's ID */
     const q = query(
