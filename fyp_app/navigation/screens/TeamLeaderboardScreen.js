@@ -2,7 +2,7 @@ import { StatusBar } from "expo-status-bar";
 import { StyleSheet, Text, View } from "react-native";
 import { useEffect, useState } from "react";
 
-import Leaderboard from "react-native-leaderboard";
+import MyLeaderboard from "./MyLeaderboard";
 
 import {
   collection,
@@ -40,9 +40,11 @@ let myBackgroundColour = "#F1FBFF";
  *   join another team or leave their current team
  */
 
-export default function TeamLeaderboardScreen() {
+export default function TeamLeaderboardScreen({ route, navigation }) {
   const [leaderboardScores, setLeaderboardScores] = useState([]);
   const [yesterdaysDate, setYesterdaysDate] = useState("");
+
+  const { loggedInUserID } = route.params;
 
   useEffect(() => {
     async function getScores() {
@@ -82,29 +84,45 @@ export default function TeamLeaderboardScreen() {
         let userIDs = teamDocument.data().userIDs;
         /* Fetch score for each user in the team using userID */
         let teamScore = 0;
-        await Promise.all(
-          userIDs.map(async (userID) => {
-            const q = query(
-              collection(database, "scores"),
-              where("userID", "==", userID),
-              where("date", "==", yesterdaysDate)
-            );
-            /* This will only ever return 1 document because user cannot have 2 scores for the 1 day! */
-            const querySnapshot = await getDocs(q);
-            let userScoresDocs = querySnapshot.docs;
-            // if userScoresDocs.length > 2 then the team of 2 people somehow have 2 scores for the day, if < 2 then not both people in
-            // the team submitted a score.
-            let userScoreDoc = userScoresDocs[0];
-            /* Get value from the score document */
-            let userScore = userScoreDoc.data().value;
-            teamScore += userScore;
-          })
-        );
-        /* Push new object with team name and score to the leaderboardData array */
-        teamScores.push({
-          name: teamDocument.data().name,
-          score: teamScore,
-        });
+        let isCurrentUser = false;
+        try {
+          await Promise.all(
+            /* Get score for yesterday for each user - if no score exists for user, give them score of 0 */
+            userIDs.map(async (userID) => {
+              const q = query(
+                collection(database, "scores"),
+                where("userID", "==", userID),
+                where("date", "==", yesterdaysDate)
+              );
+              /* This will only ever return 1 document because user cannot have 2 scores for the 1 day! */
+              /*Can return 0 scores if the user never logged anything for the day, in this case give a score of 0 */
+              const querySnapshot = await getDocs(q);
+              let userScoresDocs = querySnapshot.docs;
+              // if userScoresDocs.length > 2 then the team of 2 people somehow have 2 scores for the day, if < 2 then not both people in
+              // the team submitted a score.
+              /* If no score, assign score of 0 to user */
+              let userScore = 0;
+              /* We have user score */
+              if (userScoresDocs.length > 0) {
+                let userScoreDoc = userScoresDocs[0];
+                userScore = userScoreDoc.data().value;
+              }
+              teamScore += userScore;
+              if (userID == loggedInUserID) {
+                isCurrentUser = true;
+              }
+            })
+          );
+          /* Push new object with team name and score to the leaderboardData array */
+          /* Need to push IDs of the team members to be able to highlight in green current logged in user's team */
+          teamScores.push({
+            name: teamDocument.data().name,
+            score: teamScore,
+            isCurrentUser: isCurrentUser,
+          });
+        } catch (error) {
+          console.log("Error", error);
+        }
       })
     );
     setLeaderboardScores(teamScores); // this does not change state of leaderboardScores so does not rerender automatically, but yesterdaysDate will suffice.
@@ -113,14 +131,9 @@ export default function TeamLeaderboardScreen() {
 
   return (
     <View style={{ marginTop: 35 }}>
-      <Text style={styles.heading}>Team Leaderboard</Text>
       <Text style={styles.heading}>Yesterday's Scores</Text>
-      <Leaderboard
-        data={leaderboardScores}
-        sortBy="score"
-        labelBy="name"
-        containerStyle={{ backgroundColor: "green" }}
-      />
+      <Text style={styles.heading}>Team Leaderboard</Text>
+      <MyLeaderboard data={leaderboardScores} />
     </View>
   );
 }

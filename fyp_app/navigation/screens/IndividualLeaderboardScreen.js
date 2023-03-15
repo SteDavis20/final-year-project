@@ -4,7 +4,8 @@ import { StyleSheet, Text, View, Alert, Button } from "react-native";
 
 import { useIsFocused } from "@react-navigation/native";
 
-import Leaderboard from "react-native-leaderboard";
+// import Leaderboard from "react-native-leaderboard";
+import MyLeaderboard from "./MyLeaderboard";
 
 /*
  *   Is there only 1 individual leaderboard - YES
@@ -26,6 +27,8 @@ export default function IndividualLeaderboardScreen({ route, navigation }) {
   const [yesterdaysDate, setYesterdaysDate] = useState("");
 
   const isFocused = useIsFocused();
+
+  const { userID } = route.params;
 
   /*
    *   If today is 1st of month, e.g., 01/05/23, will this return 30/04/23, or 31/05/23?
@@ -64,10 +67,12 @@ export default function IndividualLeaderboardScreen({ route, navigation }) {
     const userDocument = await getDoc(docRef);
 
     if (userDocument.exists()) {
+      // console.log("uid? ", scoreDocUserID);
       let newEntry = "";
       newEntry = {
         name: userDocument.data().name,
         score: scoreDocScore,
+        isCurrentUser: scoreDocUserID == userID,
       };
       return newEntry;
     } else {
@@ -101,17 +106,11 @@ export default function IndividualLeaderboardScreen({ route, navigation }) {
 
   return (
     <View style={{ marginTop: 35 }}>
-      <Text style={styles.heading}>Individual Leaderboard</Text>
-      <Text style={styles.heading}>Yesterday's Scores</Text>
-      {leaderboardScores.length > 0 && (
-        <Leaderboard
-          data={leaderboardScores}
-          sortBy="score"
-          labelBy="name"
-          // oddRowColor="green"
-          // evenRowColor="cyan"
-        />
-      )}
+      {/* <Text style={styles.heading}>Yesterday's Scores</Text> */}
+      <Text style={styles.heading}>
+        Individual Leaderboard {yesterdaysDate}
+      </Text>
+      <MyLeaderboard data={leaderboardScores} />
     </View>
   );
 }
@@ -124,7 +123,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   heading: {
-    fontSize: 25,
+    fontSize: 20,
     fontWeight: "bold",
     color: "black",
     padding: 20,

@@ -209,13 +209,30 @@ export default function HomeScreen({ route, navigation }) {
     await Promise.all(
       data.map(async (userScore) => {
         // Add a new document with auto generated id.
+        let score = getScoreFromCo2(userScore.score);
         const docRef = await addDoc(collection(database, "scores"), {
           date: yesterdaysDate,
           userID: userScore.userID,
-          value: userScore.score,
+          value: score,
         });
       })
     );
+  }
+
+  function getScoreFromCo2(co2e) {
+    let score = 0;
+    if (co2e <= 300) {
+      score = 10;
+    } else if (co2e <= 400) {
+      score = 8;
+    } else if (co2e <= 500) {
+      score = 6;
+    } else if (co2e <= 600) {
+      score = 4;
+    } else {
+      score = 2;
+    }
+    return score;
   }
 
   const renderLegend = (text, color) => {

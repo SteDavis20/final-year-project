@@ -76,6 +76,7 @@ function NavBar({ route, navigation }) {
       <Tab.Screen
         name={IndividualLeaderboardName}
         component={IndividualLeaderboardScreen}
+        initialParams={{ userID: userID }}
         options={{
           headerShown: false,
         }}
@@ -83,6 +84,7 @@ function NavBar({ route, navigation }) {
       <Tab.Screen
         name={TeamLeaderboardName}
         component={TeamLeaderboardScreen}
+        initialParams={{ loggedInUserID: userID }}
         options={{
           headerShown: false,
         }}
@@ -90,6 +92,7 @@ function NavBar({ route, navigation }) {
       <Tab.Screen
         name={IndividualHistoryName}
         component={IndividualHistoryScreen}
+        initialParams={{ userID: userID }}
         options={{
           headerShown: false,
         }}
