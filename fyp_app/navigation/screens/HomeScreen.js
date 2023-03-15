@@ -359,7 +359,7 @@ export default function HomeScreen({ route, navigation }) {
       </ScrollView>
       <View
         style={{
-          bottom: 500,
+          bottom: 100,
           alignItems: "flex-end" /*flexDirection: "row-reverse" */,
         }}
       >
@@ -394,7 +394,7 @@ export default function HomeScreen({ route, navigation }) {
             style={{
               paddingHorizontal: 10,
               backgroundColor: "green",
-              width: 150,
+              width: 70,
               height: 70,
               alignItems: "center",
               borderRadius: 90,
@@ -403,9 +403,9 @@ export default function HomeScreen({ route, navigation }) {
             }}
           >
             <Text
-              style={[{ fontSize: 30, color: "white", fontWeight: "bold" }]}
+              style={[{ fontSize: 60, color: "white", fontWeight: "bold" }]}
             >
-              Log Emission +
+              +
             </Text>
           </View>
         </Pressable>

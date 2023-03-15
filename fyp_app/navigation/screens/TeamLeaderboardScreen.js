@@ -114,6 +114,7 @@ export default function TeamLeaderboardScreen() {
   return (
     <View style={{ marginTop: 35 }}>
       <Text style={styles.heading}>Team Leaderboard</Text>
+      <Text style={styles.heading}>Yesterday's Scores</Text>
       <Leaderboard
         data={leaderboardScores}
         sortBy="score"

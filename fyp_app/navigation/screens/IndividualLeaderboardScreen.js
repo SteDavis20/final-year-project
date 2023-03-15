@@ -102,6 +102,7 @@ export default function IndividualLeaderboardScreen({ route, navigation }) {
   return (
     <View style={{ marginTop: 35 }}>
       <Text style={styles.heading}>Individual Leaderboard</Text>
+      <Text style={styles.heading}>Yesterday's Scores</Text>
       {leaderboardScores.length > 0 && (
         <Leaderboard
           data={leaderboardScores}

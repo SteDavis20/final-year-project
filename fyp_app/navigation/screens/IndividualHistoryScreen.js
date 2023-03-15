@@ -103,7 +103,7 @@ export default function IndividualHistoryScreen({ route, navigation }) {
 
   return (
     <View style={{ marginTop: 35 }}>
-      <Text style={styles.heading}>Individual History</Text>
+      <Text style={styles.heading}>My Scores</Text>
       {/* {scores.length == 0 && <EmptyHistoryScreen />} */}
       {scores.length > 0 && (
         <View>

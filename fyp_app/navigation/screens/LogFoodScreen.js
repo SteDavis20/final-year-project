@@ -81,6 +81,8 @@ export default function LogFoodScreen({ route, navigation }) {
       }
     }
     let totalEmissions = kgCo2ePerKg * (portionSize / 1000); // /1000 to get grams entered
+    /* round emissions to 2 decimal places */
+    totalEmissions = totalEmissions.toFixed(2);
     return totalEmissions;
   }
 
