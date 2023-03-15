@@ -25,6 +25,7 @@ import {
   where,
   getDocs,
   doc,
+  getDoc,
   setDoc,
   addDoc,
 } from "firebase/firestore";
@@ -46,10 +47,17 @@ export default function HomeScreen({ route, navigation }) {
   const [buttonPressed, setButtonPressed] = useState(false);
   const [todaysDate, setTodaysDate] = useState("");
   const [emissionLogs, setEmissionLogs] = useState([]);
+  const [foodLogs, setFoodLogs] = useState([]);
+  const [transportLogs, setTransportLogs] = useState([]);
   const [checkedScoreGeneration, setCheckedScoreGeneration] = useState(false);
   const [yesterdaysDate, setYesterdaysDate] = useState("");
+  const [userName, setUserName] = useState("");
+  const [foodLogTotalCo2e, setFoodLogTotalCo2e] = useState(0);
+  const [transportLogTotalCo2e, setTransportLogTotalCo2e] = useState(0);
 
   const isFocused = useIsFocused();
+
+  const sideMargin = 20;
 
   const { userID } = route.params;
 
@@ -64,6 +72,14 @@ export default function HomeScreen({ route, navigation }) {
       // }
     }
     getLogs();
+    async function getUserName() {
+      const docRef = doc(database, "users", userID);
+      const userDocument = await getDoc(docRef);
+      setUserName(userDocument.data().name);
+    }
+    if (userName == "") {
+      getUserName();
+    }
   }, [todaysDate, isFocused]);
 
   /* Firebase date saved as string in the form: 7/3/2023 */
@@ -92,10 +108,19 @@ export default function HomeScreen({ route, navigation }) {
   /*
    *   Should also be "where("date", "==", insert today's date here)"
    *   Currently this will fetch every emission ever logged by the user, e.g., Monday, Tuesday, Wednesday etc., will be displayed
+   *
+   *  Every single time the page is rerendered, refreshed, navigating to this page, the variables already have the data from the previous render, so only need to add
+   * the newest addition, or delete the oldest instead of fetching all over again. The state is saved.
+   * For now this works because the temp arrays and scores are set to empty, populated and then used to set the state, if I did setState(doc.data()) for each emission,
+   * it doubles the emissions every single time because the previous state is saved and then the same data is added over and over and over.
    */
   async function getEmissionLogsFromDatabase() {
     return new Promise(async (resolve, reject) => {
       let databaseEmissionLogs = [];
+      let tempFoodLogs = [];
+      let tempTransportLogs = [];
+      let tempTotalFoodCo2e = 0;
+      let tempTotalTransportCo2e = 0;
       const q = query(
         collection(database, "emission_logs"),
         where("userID", "==", userID),
@@ -103,42 +128,21 @@ export default function HomeScreen({ route, navigation }) {
       );
       const querySnapshot = await getDocs(q);
       querySnapshot.forEach((document) => {
+        if (document.data().category == "food") {
+          tempFoodLogs.push(document.data());
+          tempTotalFoodCo2e += document.data().co2e;
+        } else if (document.data().category == "transport") {
+          tempTransportLogs.push(document.data());
+          tempTotalTransportCo2e += document.data().co2e;
+        }
         databaseEmissionLogs.push(document.data());
       });
+      setFoodLogs(tempFoodLogs);
+      setTransportLogs(tempTransportLogs);
+      setFoodLogTotalCo2e(tempTotalFoodCo2e);
+      setTransportLogTotalCo2e(tempTotalTransportCo2e);
       resolve(databaseEmissionLogs);
     });
-  }
-
-  function getScoreForTheDay() {
-    let totalEmissions = 0;
-
-    for (let i = 0; i < emissionLogs.length; i++) {
-      totalEmissions += emissionLogs[i].co2e;
-    }
-
-    /* If separating into Food and Transport emissions */
-    // for (let i = 0; i < foodDummyData.length; i++) {
-    //   totalEmissions += foodDummyData[i].co2e;
-    // }
-
-    // for (let i = 0; i < transportDummyData.length; i++) {
-    //   totalEmissions += transportDummyData[i].co2e;
-    // }
-
-    /* Need to come up with more accurate scores at later stage */
-    let score = 0;
-    if (totalEmissions <= 300) {
-      score = 10;
-    } else if (totalEmissions <= 400) {
-      score = 8;
-    } else if (totalEmissions <= 500) {
-      score = 6;
-    } else if (totalEmissions <= 600) {
-      score = 4;
-    } else {
-      score = 2;
-    }
-    return score;
   }
 
   /*
@@ -247,7 +251,7 @@ export default function HomeScreen({ route, navigation }) {
             backgroundColor: color || "white",
           }}
         />
-        <Text style={{ color: "white", fontSize: 16 }}>{text || ""}</Text>
+        <Text style={{ color: "black", fontSize: 16 }}>{text || ""}</Text>
       </View>
     );
   };
@@ -255,42 +259,57 @@ export default function HomeScreen({ route, navigation }) {
   return (
     <View style={{ marginTop: 35 }}>
       <ScrollView
-        showsVerticalScrollIndicator={false}
+        // showsVerticalScrollIndicator={false}
         style={{ backgroundColor: myBackgroundColour }}
       >
         <Text style={styles.heading}>Home</Text>
+        {/* <Text style={styles.welcomeMessage}>
+          Hi {userName}, here are your logs for today
+        </Text> */}
         <View
           style={{
             marginVertical: 10,
-            marginHorizontal: 10,
+            marginHorizontal: sideMargin,
             borderRadius: 10,
             paddingVertical: 10,
-            backgroundColor: "#414141",
+            backgroundColor: "white", // #414141
             justifyContent: "center",
             alignItems: "center",
+            shadowColor: "black",
+            shadowOffset: {
+              width: 5,
+              height: 5,
+            },
+            shadowRadius: 5,
+            shadowOpacity: 0.4,
           }}
         >
           {/*********************    Custom Header component      ********************/}
           <Text
             style={{
-              color: "white",
-              fontSize: 32,
+              color: "black",
+              fontSize: 25,
               fontWeight: "bold",
               marginBottom: 12,
             }}
           >
-            Co2e Emissions
+            {userName}'s breakdown
           </Text>
           {/****************************************************************************/}
-
           <PieChart
             strokeColor="white"
             strokeWidth={4}
             donut
             /* Data here needs to be replaced with total food co2e emissions and total transport co2e emissions */
             data={[
-              { value: 30, color: "rgb(84,219,234)" },
-              { value: 40, color: "lightgreen" },
+              {
+                value: Math.round(foodLogTotalCo2e * 100) / 100,
+                color: "rgb(84,219,234)",
+              },
+              {
+                value: Math.round(transportLogTotalCo2e * 100) / 100,
+                color: "lightgreen",
+              },
             ]}
             innerCircleColor="#414141"
             innerCircleBorderWidth={4}
@@ -302,8 +321,26 @@ export default function HomeScreen({ route, navigation }) {
             centerLabelComponent={() => {
               return (
                 <View>
-                  <Text style={{ color: "white", fontSize: 36 }}>70</Text>
-                  <Text style={{ color: "white", fontSize: 18 }}>Total</Text>
+                  <Text
+                    style={{
+                      color: "white",
+                      fontSize: 18,
+                      alignSelf: "center",
+                    }}
+                  >
+                    {Math.round(
+                      (foodLogTotalCo2e + transportLogTotalCo2e) * 100
+                    ) / 100}
+                  </Text>
+                  <Text
+                    style={{
+                      color: "white",
+                      fontSize: 18,
+                      alignSelf: "center",
+                    }}
+                  >
+                    Total
+                  </Text>
                 </View>
               );
             }}
@@ -332,45 +369,46 @@ export default function HomeScreen({ route, navigation }) {
         {/* If no entries, pie chart will also be empty so need to fill the screen for when no data entered? */}
         <View>
           <ScrollView>
-            {/* <Text style={styles.heading}>Food</Text> */}
-            <Text style={styles.heading}>Emissions</Text>
+            <Text style={styles.heading}>Food</Text>
+            {/* <Text style={styles.heading}>Emissions</Text> */}
             <View>
               {/* {foodDummyData.map((food) => { */}
-
-              {emissionLogs.map((food) => {
-                return (
-                  <View>
-                    <EmissionLogButton
-                      /* icon= */ emissionName={food.name}
-                      co2eValue={food.co2e}
-                      unit={"kgCo2e"}
-                      /* onPress={} */ colour={"white"}
-                      fontSize={20}
-                      iconName={"cutlery"}
-                    />
-                  </View>
-                );
-              })}
+              {foodLogs.length > 0 &&
+                foodLogs.map((food) => {
+                  return (
+                    <View>
+                      <EmissionLogButton
+                        /* icon= */ emissionName={food.name}
+                        co2eValue={food.co2e}
+                        unit={"kgCo2e"}
+                        /* onPress={} */ colour={"white"}
+                        fontSize={20}
+                        iconName={"cutlery"}
+                      />
+                    </View>
+                  );
+                })}
             </View>
             {/****************************************************************************/}
             {/* Transport Log Entries */}
-            {/* <Text style={styles.heading}>Transport</Text>
+            <Text style={styles.heading}>Transport</Text>
             <View>
-              {transportDummyData.map((transport) => {
-                return (
-                  <View>
-                    <EmissionLogButton
-                      emissionName={transport.name}
-                      unit={"kgCo2e"}
-                      co2eValue={transport.co2e}
-                      colour={"white"}
-                      fontSize={20}
-                      iconName={"car"}
-                    />
-                  </View>
-                );
-              })}
-            </View> */}
+              {transportLogs.length > 0 &&
+                transportLogs.map((transport) => {
+                  return (
+                    <View>
+                      <EmissionLogButton
+                        emissionName={transport.name}
+                        unit={"kgCo2e"}
+                        co2eValue={transport.co2e}
+                        colour={"white"}
+                        fontSize={20}
+                        iconName={"car"}
+                      />
+                    </View>
+                  );
+                })}
+            </View>
           </ScrollView>
         </View>
       </ScrollView>
@@ -475,6 +513,14 @@ const styles = StyleSheet.create({
   co2e: { textAlign: "right", width: "50%" },
   heading: {
     fontSize: 30,
+    fontWeight: "bold",
+    color: "black",
+    padding: 20,
+    paddingBottom: 10,
+    alignSelf: "center",
+  },
+  welcomeMessage: {
+    fontSize: 20,
     fontWeight: "bold",
     color: "black",
     padding: 20,

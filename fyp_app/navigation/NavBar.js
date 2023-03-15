@@ -14,9 +14,9 @@ import TeamLeaderboardScreen from "./screens/TeamLeaderboardScreen";
 
 // Screen Names
 const homeName = "Home";
-const IndividualLeaderboardName = "Individual Leaderboard";
+const IndividualLeaderboardName = "Leaderboard";
 const TeamLeaderboardName = "Team Leaderboard";
-const IndividualHistoryName = "Individual History";
+const IndividualHistoryName = "My Scores";
 
 // create navigator
 const Tab = createBottomTabNavigator();
@@ -43,11 +43,11 @@ function NavBar({ route, navigation }) {
 
           if (route.name === homeName) {
             iconName = "home";
-          } else if (route.name === "Individual Leaderboard") {
+          } else if (route.name === IndividualLeaderboardName) {
             iconName = "user";
-          } else if (route.name === "Team Leaderboard") {
+          } else if (route.name === TeamLeaderboardName) {
             iconName = "users";
-          } else if (route.name === "Individual History") {
+          } else if (route.name === IndividualHistoryName) {
             iconName = "bar-chart";
           }
 

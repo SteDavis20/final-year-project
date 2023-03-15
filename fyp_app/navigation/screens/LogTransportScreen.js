@@ -157,8 +157,8 @@ export default function LogTransportScreen({ route, navigation }) {
     }
     // instead of all these if statements, use naming system of: car size + fuel type
     // set or update this key based on user input
-    /* round emissions to 2 decimal places */
-    totalEmissions = totalEmissions.toFixed(2);
+    /* round emissions to 2 decimal places and save as a number, not a string! */
+    totalEmissions = Math.round(totalEmissions * 100) / 100;
     return totalEmissions;
   }
 

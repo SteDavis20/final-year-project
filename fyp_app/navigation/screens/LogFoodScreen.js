@@ -46,7 +46,7 @@ const portionSizesData = [
 
 export default function LogFoodScreen({ route, navigation }) {
   const [foodSelected, setFoodSelected] = useState("");
-  const [portionSize, setPortionSize] = useState("");
+  const [portionSize, setPortionSize] = useState(0);
   const [portionUnitSelected, setPortionUnitSelected] = useState("");
 
   const [refreshPage, setRefreshPage] = useState(false); // used to automatically refresh page
@@ -68,27 +68,21 @@ export default function LogFoodScreen({ route, navigation }) {
     let kgCo2ePerKg = 0;
     console.log("Food data: \n" + JSON.stringify(foodData));
     for (let i = 0; i < foodData.length; i++) {
-      console.log(
-        "Food name: " +
-          foodSelected +
-          "\nFood name in data: " +
-          foodData[i].name
-      );
       if (foodSelected == foodData[i].name) {
-        console.log("Match found in food data!");
         kgCo2ePerKg = foodData[i].kgCo2ePerKg;
         break;
       }
     }
     let totalEmissions = kgCo2ePerKg * (portionSize / 1000); // /1000 to get grams entered
-    /* round emissions to 2 decimal places */
-    totalEmissions = totalEmissions.toFixed(2);
+    /* round emissions to 2 decimal places and save as number, not a string! */
+    totalEmissions = Math.round(totalEmissions * 100) / 100;
     return totalEmissions;
   }
 
   async function addLogToDatabase(log) {
     const docData = {
       category: "food",
+      /* make sure co2e is of type number, not string! */
       co2e: calculateTotalEmissions(),
       date: getTodaysDate(),
       name: foodSelected,
@@ -168,7 +162,7 @@ export default function LogFoodScreen({ route, navigation }) {
           console.log("Selected portion size: " + selectedItem);
           setPortionUnitSelected(selectedItem.name);
         }}
-        defaultButtonText={"Select portion size"}
+        defaultButtonText={"Select unit"}
         buttonTextAfterSelection={(selectedItem, index) => {
           return portionUnitSelected;
         }}
