@@ -108,7 +108,12 @@ export default function IndividualLeaderboardScreen({ route, navigation }) {
     <View style={{ marginTop: 35 }}>
       <Text style={styles.heading}>Yesterday's Scores</Text>
       <Text style={styles.heading}>Individual Leaderboard</Text>
-      <MyLeaderboard data={leaderboardScores} />
+      <MyLeaderboard
+        data={leaderboardScores}
+        sortByProp="score"
+        centerProp="name"
+        rhsProp="score"
+      />
     </View>
   );
 }

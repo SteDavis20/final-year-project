@@ -5,11 +5,11 @@ import { StyleSheet, View, Text, FlatList } from "react-native";
  * Need to sort data based on highest to lowest scores
  * Style data
  */
-function MyLeaderboard({ data }) {
+function MyLeaderboard({ data, sortByProp, centerProp, rhsProp }) {
   /* Sort by descending scores*/
   const sortData = (data) => {
     const sortedData = [...data].sort(
-      (item1, item2) => item2.score - item1.score
+      (item1, item2) => item2[sortByProp] - item1[sortByProp]
     );
     return sortedData;
   };
@@ -29,9 +29,9 @@ function MyLeaderboard({ data }) {
         </Text>
         {icon && <Image source={{ uri: item.icon }} style={styles.avatar} />}
         <Text style={[styles.label]} numberOfLines={1}>
-          {item.name}
+          {item[centerProp]}
         </Text>
-        <Text style={styles.score}>{item.score}</Text>
+        <Text style={styles.score}>{item[rhsProp]}</Text>
       </View>
     </View>
   );

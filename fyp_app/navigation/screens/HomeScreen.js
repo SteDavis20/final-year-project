@@ -447,7 +447,6 @@ export default function HomeScreen({ route, navigation }) {
         >
           <View
             style={{
-              paddingHorizontal: 10,
               backgroundColor: "green",
               width: 70,
               height: 70,
@@ -458,7 +457,14 @@ export default function HomeScreen({ route, navigation }) {
             }}
           >
             <Text
-              style={[{ fontSize: 60, color: "white", fontWeight: "bold" }]}
+              style={[
+                {
+                  fontSize: 60,
+                  color: "white",
+                  fontWeight: "bold",
+                  textAlign: "center",
+                },
+              ]}
             >
               +
             </Text>

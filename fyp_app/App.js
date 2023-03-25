@@ -31,14 +31,17 @@ function App() {
           name="Log Food"
           component={LogFoodScreen}
           options={{
-            headerShown: false,
+            headerShown: true,
           }}
+          // style title...
+          // title: "",setTransportLogTotalCo2e(tempTotalTransportCo2e);
         />
         <Stack.Screen
           name="Log Transport"
           component={LogTransportScreen}
           options={{
-            headerShown: false,
+            headerShown: true,
+            title: "",
           }}
         />
       </Stack.Navigator>

@@ -23,6 +23,8 @@ import { collection, addDoc, doc, setDoc, Timestamp } from "firebase/firestore";
 import { foodData } from "../../co2Emissions";
 import database from "../../firebase-config";
 
+import ActionButton from "../../Components/Buttons/ActionButton";
+
 let myBackgroundColour = "#F1FBFF";
 
 const portionSizesData = [
@@ -115,7 +117,9 @@ export default function LogFoodScreen({ route, navigation }) {
 
   return (
     <ScrollView style={{ backgroundColor: myBackgroundColour }}>
-      <Text style={styles.heading}>Please log food below</Text>
+      <Text style={[styles.heading, { marginTop: 20 }]}>
+        Please log food below
+      </Text>
       <Text style={styles.heading}>Food type:</Text>
       <SelectDropdown
         data={foodData}
@@ -153,9 +157,10 @@ export default function LogFoodScreen({ route, navigation }) {
           value={portionSize}
           placeholder="useless placeholder" // need to move this text into center
           keyboardType="numeric"
+          textAlign="center"
         />
       </SafeAreaView>
-      <View style={{ padding: 10 }}></View>
+      <View style={{ padding: 10, marginTop: 15 }}></View>
       <SelectDropdown
         data={portionSizesData}
         onSelect={(selectedItem, index) => {
@@ -213,9 +218,65 @@ export default function LogFoodScreen({ route, navigation }) {
           );
         })}
       </View> */}
-      <View style={{ padding: 10 }}></View>
+      <View style={{ padding: 10, marginTop: 30 }}></View>
       <View style={{ flexDirection: "row", justifyContent: "space-evenly" }}>
-        <Pressable
+        <ActionButton
+          title="Reset"
+          backgroundColour="red"
+          textColour="white"
+          fontSize={20}
+          onPress={() => {
+            Alert.alert(
+              "Are you sure?",
+              "Selecting reset will lose your current progress.",
+              [
+                {
+                  text: "Cancel",
+                  onPress: () => {
+                    // do nothing
+                  },
+                  style: "cancel",
+                },
+                {
+                  text: "Reset",
+                  onPress: () => {
+                    resetData();
+                    setRefreshPage(!refreshPage);
+                  },
+                },
+              ]
+            );
+          }}
+        />
+        <ActionButton
+          title="Save"
+          backgroundColour="green"
+          textColour="white"
+          fontSize={20}
+          onPress={() => {
+            Alert.alert(
+              "Are you sure",
+              "Double check you've entered everything correctly.",
+              [
+                {
+                  text: "Cancel",
+                  onPress: () => {
+                    // do nothing
+                  },
+                  style: "cancel",
+                },
+                {
+                  text: "Continue",
+                  onPress: () => {
+                    addLogToDatabase();
+                    navigation.pop();
+                  },
+                },
+              ]
+            );
+          }}
+        />
+        {/* <Pressable
           onPress={() => {
             Alert.alert(
               "Alert Title",
@@ -270,7 +331,7 @@ export default function LogFoodScreen({ route, navigation }) {
           <View>
             <Text style={{ color: "green", fontWeight: "bold" }}>Save</Text>
           </View>
-        </Pressable>
+        </Pressable> */}
       </View>
     </ScrollView>
   );
@@ -309,7 +370,7 @@ const styles = StyleSheet.create({
     backgroundColor: "black",
   },
   heading: {
-    fontSize: 30,
+    fontSize: 25,
     fontWeight: "bold",
     color: "black",
     padding: 20,

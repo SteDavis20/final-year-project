@@ -16,6 +16,8 @@ import { transportData } from "../../co2Emissions";
 
 import { foodDummyData, transportDummyData } from "../../dummyData";
 
+import ActionButton from "../../Components/Buttons/ActionButton";
+
 import database from "../../firebase-config";
 import { collection, addDoc, doc, setDoc, Timestamp } from "firebase/firestore";
 
@@ -107,6 +109,9 @@ export default function LogTransportScreen({ route, navigation }) {
   const [numberOfPassengers, setNumberOfPassengers] = useState("");
   const [unitsOfDistanceSelected, setUnitsOfDistanceSelected] = useState("");
   const [mapIdentifier, setMapIdentifier] = useState("");
+  const [refreshPage, setRefreshPage] = useState(false); // used to automatically refresh page
+
+  const sideMargin = 20;
 
   const { userID } = route.params;
 
@@ -136,7 +141,7 @@ export default function LogTransportScreen({ route, navigation }) {
     }
 
     /* Parse json data to get co2e depending on car, luas, fuel type, car size etc., */
-    let gCo2ePerKm = 0;
+    let kgCo2ePerKm = 0;
     console.log("Transport data: \n" + JSON.stringify(transportData));
     for (let i = 0; i < transportData.length; i++) {
       console.log(
@@ -147,11 +152,11 @@ export default function LogTransportScreen({ route, navigation }) {
       );
       if (mapIdentifier == transportData[i].name) {
         console.log("Match found in transport data!");
-        gCo2ePerKm = transportData[i].gCo2ePerKm;
+        kgCo2ePerKm = transportData[i].kgCo2ePerKm;
         break;
       }
     }
-    let totalEmissions = gCo2ePerKm * distance;
+    let totalEmissions = kgCo2ePerKm * distance;
     if (modeOfTransportSelected == "car") {
       totalEmissions /= numberOfPassengers;
     }
@@ -193,202 +198,215 @@ export default function LogTransportScreen({ route, navigation }) {
     return date + "/" + month + "/" + year;
   }
 
+  function resetData() {
+    setModeOfTransportSelected("");
+    setCarSizeSelected("");
+    setFuelTypeSelected("");
+    setDistanceEntered(0);
+    setNumberOfPassengers("");
+    setUnitsOfDistanceSelected("");
+    setMapIdentifier("");
+  }
+
   return (
-    <ScrollView style={{ backgroundColor: "#BEFFDC", marginTop: 35 }}>
-      <Text style={styles.heading}>Mode of Transport</Text>
-      <SelectDropdown
-        data={transportTypeData}
-        onSelect={(selectedItem, index) => {
-          setModeOfTransportSelected(selectedItem.name);
-        }}
-        defaultButtonText={"Select transport type"}
-        buttonTextAfterSelection={(selectedItem, index) => {
-          return modeOfTransportSelected;
-        }}
-        rowTextForSelection={(item, index) => {
-          return item.name;
-        }}
-        buttonStyle={styles.dropdown1ButtonStyle}
-        buttonTextStyle={styles.dropdown1ButtonTxtStyle}
-        renderDropdownIcon={(isOpened) => {
-          return (
-            <FontAwesome
-              name={isOpened ? "chevron-up" : "chevron-down"}
-              color={"#444"}
-              size={18}
-            />
-          );
-        }}
-        dropdownIconPosition={"right"}
-        dropdownStyle={styles.dropdown1DropdownStyle}
-        rowStyle={styles.dropdown1RowStyle}
-        rowTextStyle={styles.dropdown1RowTxtStyle}
-      />
-      {/* ==================================================================================================== */}
-      {/* Have button for each option to select  */}
-      {/* {transportData.map((modeOfTransport) => {
-        return (
-          <View>
-            <Pressable
-              onPress={() => {
-                Alert.alert("Alert Title", modeOfTransport.name + " Selected", [
-                  {
-                    text: "Cancel",
-                    onPress: () => console.log("Cancel Pressed"),
-                    style: "cancel",
-                  },
-                  { text: "Save", onPress: () => console.log("Save Pressed") },
-                ]);
-              }}
-            >
-              <View>
-                <Text>{modeOfTransport.name}</Text>
-              </View>
-            </Pressable>
-          </View>
-        );
-      })} */}
-
-      {/* ==================================================================================================== */}
-      <Text>
-        Only have this if car is selected as mode of transport! Could be bus or
-        luas or dart
-      </Text>
-
-      {modeOfTransportSelected == "Car" && (
-        <View>
-          <Text style={styles.heading}>Car Size - Add photo</Text>
-          <SelectDropdown
-            data={carSizesData}
-            onSelect={(selectedItem, index) => {
-              setCarSizeSelected(selectedItem.name);
-            }}
-            defaultButtonText={"Select car size"}
-            buttonTextAfterSelection={(selectedItem, index) => {
-              return carSizeSelected;
-            }}
-            rowTextForSelection={(item, index) => {
-              return item.name;
-            }}
-            buttonStyle={styles.dropdown1ButtonStyle}
-            buttonTextStyle={styles.dropdown1ButtonTxtStyle}
-            renderDropdownIcon={(isOpened) => {
-              return (
-                <FontAwesome
-                  name={isOpened ? "chevron-up" : "chevron-down"}
-                  color={"#444"}
-                  size={18}
-                />
-              );
-            }}
-            dropdownIconPosition={"right"}
-            dropdownStyle={styles.dropdown1DropdownStyle}
-            rowStyle={styles.dropdown1RowStyle}
-            rowTextStyle={styles.dropdown1RowTxtStyle}
-          />
-
-          {/* ==================================================================================================== */}
-          {/* Have button for each car size type and user selects button  */}
-          {/* {carSizesData.map((carSize) => {
-        return (
-          <View>
-            <Pressable
-              onPress={() => {
-                Alert.alert("Alert Title", modeOfTransport.name + " Selected", [
-                  {
-                    text: "Cancel",
-                    onPress: () => console.log("Cancel Pressed"),
-                    style: "cancel",
-                  },
-                  { text: "Save", onPress: () => console.log("Save Pressed") },
-                ]);
-              }}
-            >
-              <View>
-                <Text>{modeOfTransport.name}</Text>
-              </View>
-            </Pressable>
-          </View>
-        );
-      })} */}
-
-          {/* ==================================================================================================== */}
-
-          <Text style={styles.heading}>Fuel Type</Text>
-          <SelectDropdown
-            data={carFuelTypeData}
-            onSelect={(selectedItem, index) => {
-              setFuelTypeSelected(selectedItem.name);
-            }}
-            defaultButtonText={"Select fuel type"}
-            buttonTextAfterSelection={(selectedItem, index) => {
-              return fuelTypeSelected;
-            }}
-            rowTextForSelection={(item, index) => {
-              return item.name;
-            }}
-            buttonStyle={styles.dropdown1ButtonStyle}
-            buttonTextStyle={styles.dropdown1ButtonTxtStyle}
-            renderDropdownIcon={(isOpened) => {
-              return (
-                <FontAwesome
-                  name={isOpened ? "chevron-up" : "chevron-down"}
-                  color={"#444"}
-                  size={18}
-                />
-              );
-            }}
-            dropdownIconPosition={"right"}
-            dropdownStyle={styles.dropdown1DropdownStyle}
-            rowStyle={styles.dropdown1RowStyle}
-            rowTextStyle={styles.dropdown1RowTxtStyle}
-          />
-        </View>
-      )}
-      {/* ==================================================================================================== */}
-      <Text style={styles.heading}>Distance</Text>
-      <SafeAreaView>
-        <TextInput
-          style={styles.dropdown1ButtonStyle}
-          onChangeText={setDistanceEntered}
-          value={distanceEntered}
-          placeholder="Enter distance travelled"
-          keyboardType="numeric"
+    <ScrollView
+      style={{
+        backgroundColor: "#BEFFDC",
+        // marginTop: 35,
+      }}
+    >
+      <View style={{ marginHorizontal: sideMargin }}>
+        <Text style={styles.heading}>Mode of Transport</Text>
+        <SelectDropdown
+          data={transportTypeData}
+          onSelect={(selectedItem, index) => {
+            setModeOfTransportSelected(selectedItem.name);
+          }}
+          defaultButtonText={"Select transport type"}
+          buttonTextAfterSelection={(selectedItem, index) => {
+            return modeOfTransportSelected;
+          }}
+          rowTextForSelection={(item, index) => {
+            return item.name;
+          }}
+          buttonStyle={styles.dropdown1ButtonStyle}
+          buttonTextStyle={styles.dropdown1ButtonTxtStyle}
+          renderDropdownIcon={(isOpened) => {
+            return (
+              <FontAwesome
+                name={isOpened ? "chevron-up" : "chevron-down"}
+                color={"#444"}
+                size={18}
+              />
+            );
+          }}
+          dropdownIconPosition={"right"}
+          dropdownStyle={styles.dropdown1DropdownStyle}
+          rowStyle={styles.dropdown1RowStyle}
+          rowTextStyle={styles.dropdown1RowTxtStyle}
         />
-      </SafeAreaView>
+        {/* ==================================================================================================== */}
+        {/* Have button for each option to select  */}
+        {/* {transportData.map((modeOfTransport) => {
+        return (
+          <View>
+            <Pressable
+              onPress={() => {
+                Alert.alert("Alert Title", modeOfTransport.name + " Selected", [
+                  {
+                    text: "Cancel",
+                    onPress: () => console.log("Cancel Pressed"),
+                    style: "cancel",
+                  },
+                  { text: "Save", onPress: () => console.log("Save Pressed") },
+                ]);
+              }}
+            >
+              <View>
+                <Text>{modeOfTransport.name}</Text>
+              </View>
+            </Pressable>
+          </View>
+        );
+      })} */}
 
-      {/* ==================================================================================================== */}
-      <SelectDropdown
-        data={unitsOfDistanceData}
-        onSelect={(selectedItem, index) => {
-          setUnitsOfDistanceSelected(selectedItem.name);
-        }}
-        defaultButtonText={"Select unit of distance"}
-        buttonTextAfterSelection={(selectedItem, index) => {
-          return unitsOfDistanceSelected;
-        }}
-        rowTextForSelection={(item, index) => {
-          return item.name;
-        }}
-        buttonStyle={styles.dropdown1ButtonStyle}
-        buttonTextStyle={styles.dropdown1ButtonTxtStyle}
-        renderDropdownIcon={(isOpened) => {
-          return (
-            <FontAwesome
-              name={isOpened ? "chevron-up" : "chevron-down"}
-              color={"#444"}
-              size={18}
+        {/* ==================================================================================================== */}
+        {modeOfTransportSelected == "Car" && (
+          <View>
+            <Text style={styles.heading}>Car Size - Add photo</Text>
+            <SelectDropdown
+              data={carSizesData}
+              onSelect={(selectedItem, index) => {
+                setCarSizeSelected(selectedItem.name);
+              }}
+              defaultButtonText={"Select car size"}
+              buttonTextAfterSelection={(selectedItem, index) => {
+                return carSizeSelected;
+              }}
+              rowTextForSelection={(item, index) => {
+                return item.name;
+              }}
+              buttonStyle={styles.dropdown1ButtonStyle}
+              buttonTextStyle={styles.dropdown1ButtonTxtStyle}
+              renderDropdownIcon={(isOpened) => {
+                return (
+                  <FontAwesome
+                    name={isOpened ? "chevron-up" : "chevron-down"}
+                    color={"#444"}
+                    size={18}
+                  />
+                );
+              }}
+              dropdownIconPosition={"right"}
+              dropdownStyle={styles.dropdown1DropdownStyle}
+              rowStyle={styles.dropdown1RowStyle}
+              rowTextStyle={styles.dropdown1RowTxtStyle}
             />
-          );
-        }}
-        dropdownIconPosition={"right"}
-        dropdownStyle={styles.dropdown1DropdownStyle}
-        rowStyle={styles.dropdown1RowStyle}
-        rowTextStyle={styles.dropdown1RowTxtStyle}
-      />
 
-      {/* Have button for each car size type and user selects button  */}
-      {/* {unitsOfDistanceData.map((unitsOfDistance) => {
+            {/* ==================================================================================================== */}
+            {/* Have button for each car size type and user selects button  */}
+            {/* {carSizesData.map((carSize) => {
+        return (
+          <View>
+            <Pressable
+              onPress={() => {
+                Alert.alert("Alert Title", modeOfTransport.name + " Selected", [
+                  {
+                    text: "Cancel",
+                    onPress: () => console.log("Cancel Pressed"),
+                    style: "cancel",
+                  },
+                  { text: "Save", onPress: () => console.log("Save Pressed") },
+                ]);
+              }}
+            >
+              <View>
+                <Text>{modeOfTransport.name}</Text>
+              </View>
+            </Pressable>
+          </View>
+        );
+      })} */}
+
+            {/* ==================================================================================================== */}
+
+            <Text style={styles.heading}>Fuel Type</Text>
+            <SelectDropdown
+              data={carFuelTypeData}
+              onSelect={(selectedItem, index) => {
+                setFuelTypeSelected(selectedItem.name);
+              }}
+              defaultButtonText={"Select fuel type"}
+              buttonTextAfterSelection={(selectedItem, index) => {
+                return fuelTypeSelected;
+              }}
+              rowTextForSelection={(item, index) => {
+                return item.name;
+              }}
+              buttonStyle={styles.dropdown1ButtonStyle}
+              buttonTextStyle={styles.dropdown1ButtonTxtStyle}
+              renderDropdownIcon={(isOpened) => {
+                return (
+                  <FontAwesome
+                    name={isOpened ? "chevron-up" : "chevron-down"}
+                    color={"#444"}
+                    size={18}
+                  />
+                );
+              }}
+              dropdownIconPosition={"right"}
+              dropdownStyle={styles.dropdown1DropdownStyle}
+              rowStyle={styles.dropdown1RowStyle}
+              rowTextStyle={styles.dropdown1RowTxtStyle}
+            />
+          </View>
+        )}
+        {/* ==================================================================================================== */}
+        <Text style={styles.heading}>Distance</Text>
+        <SafeAreaView>
+          <TextInput
+            style={styles.dropdown1ButtonStyle}
+            onChangeText={setDistanceEntered}
+            value={distanceEntered}
+            placeholder="Enter distance travelled"
+            keyboardType="numeric"
+            textAlign="center"
+          />
+        </SafeAreaView>
+
+        {/* ==================================================================================================== */}
+        <View style={{ margin: 20 }}></View>
+        <SelectDropdown
+          data={unitsOfDistanceData}
+          onSelect={(selectedItem, index) => {
+            setUnitsOfDistanceSelected(selectedItem.name);
+          }}
+          defaultButtonText={"Select unit of distance"}
+          buttonTextAfterSelection={(selectedItem, index) => {
+            return unitsOfDistanceSelected;
+          }}
+          rowTextForSelection={(item, index) => {
+            return item.name;
+          }}
+          buttonStyle={styles.dropdown1ButtonStyle}
+          buttonTextStyle={styles.dropdown1ButtonTxtStyle}
+          renderDropdownIcon={(isOpened) => {
+            return (
+              <FontAwesome
+                name={isOpened ? "chevron-up" : "chevron-down"}
+                color={"#444"}
+                size={18}
+              />
+            );
+          }}
+          dropdownIconPosition={"right"}
+          dropdownStyle={styles.dropdown1DropdownStyle}
+          rowStyle={styles.dropdown1RowStyle}
+          rowTextStyle={styles.dropdown1RowTxtStyle}
+        />
+
+        {/* Have button for each car size type and user selects button  */}
+        {/* {unitsOfDistanceData.map((unitsOfDistance) => {
         return (
           <View>
             <Pressable
@@ -411,23 +429,104 @@ export default function LogTransportScreen({ route, navigation }) {
         );
       })} */}
 
-      {/* ==================================================================================================== */}
-      {/* Have button for each car size type and user selects button  */}
-      <Text style={styles.heading}>Number of Passengers</Text>
-      <SafeAreaView>
-        <TextInput
-          style={styles.dropdown1ButtonStyle}
-          onChangeText={setNumberOfPassengers}
-          value={numberOfPassengers}
-          placeholder="Enter number of passengers"
-          keyboardType="numeric"
-        />
-      </SafeAreaView>
-      {/* =================================================================================================== */}
+        {/* ==================================================================================================== */}
+        {/* Have button for each car size type and user selects button  */}
+        <Text style={styles.heading}>Number of Passengers</Text>
+        <SafeAreaView>
+          <TextInput
+            style={styles.dropdown1ButtonStyle}
+            onChangeText={setNumberOfPassengers}
+            value={numberOfPassengers}
+            placeholder="Enter number of passengers"
+            keyboardType="numeric"
+            textAlign="center"
+          />
+        </SafeAreaView>
+        {/* =================================================================================================== */}
 
-      <View style={{ padding: 10 }}></View>
-      <View style={{ flexDirection: "row", justifyContent: "space-evenly" }}>
-        <Pressable
+        <View style={{ padding: 10 }}></View>
+        <View style={{ flexDirection: "row", justifyContent: "space-evenly" }}>
+          <ActionButton
+            title="Reset"
+            backgroundColour="red"
+            textColour="white"
+            fontSize={20}
+            onPress={() => {
+              Alert.alert(
+                "Are you sure?",
+                "Selecting reset will lose your current progress.",
+                [
+                  {
+                    text: "Cancel",
+                    onPress: () => console.log("Cancel Pressed"),
+                    style: "cancel",
+                  },
+                  {
+                    text: "Reset",
+                    onPress: () => {
+                      resetData();
+                      setRefreshPage(!refreshPage);
+                    },
+                  },
+                ]
+              );
+            }}
+          />
+          <ActionButton
+            title="Save"
+            backgroundColour="green"
+            textColour="white"
+            fontSize={20}
+            onPress={() => {
+              Alert.alert(
+                "Are you sure",
+                "Double check you've entered everything correctly.",
+                [
+                  {
+                    text: "Cancel",
+                    onPress: () => console.log("Cancel Pressed"),
+                    style: "cancel",
+                  },
+                  {
+                    text: "Continue",
+                    onPress: () => {
+                      if (modeOfTransportSelected == "Car") {
+                        let carSizeDecapitalised =
+                          carSizeSelected.toLowerCase();
+                        // console.log(
+                        // "Car size decapitalised: " + carSizeDecapitalised
+                        // );
+                        // console.log("Fuel type selected: " + fuelTypeSelected);
+                        // console.log(
+                        // "Mode of transport selected: " +
+                        // modeOfTransportSelected
+                        // );
+                        // console.log(
+                        // "New identifier: " +
+                        // carSizeDecapitalised +
+                        // fuelTypeSelected +
+                        // modeOfTransportSelected
+                        // );
+                        setMapIdentifier(
+                          carSizeDecapitalised +
+                            fuelTypeSelected +
+                            modeOfTransportSelected
+                        );
+                        // console.log("New identifier: " + mapIdentifier);
+                      } else {
+                        let modeOfTransportDecapitalised =
+                          modeOfTransportSelected.toLowerCase();
+                        setMapIdentifier(modeOfTransportDecapitalised);
+                      }
+                      navigation.pop();
+                    },
+                  },
+                ]
+              );
+            }}
+          />
+
+          {/* <Pressable
           onPress={() => {
             Alert.alert(
               "Alert Title",
@@ -451,8 +550,8 @@ export default function LogTransportScreen({ route, navigation }) {
           <View>
             <Text style={{ color: "red", fontWeight: "bold" }}>Reset</Text>
           </View>
-        </Pressable>
-        <Pressable
+        </Pressable> */}
+          {/* <Pressable
           onPress={() => {
             Alert.alert("Alert Title", "Save Selected", [
               {
@@ -500,7 +599,8 @@ export default function LogTransportScreen({ route, navigation }) {
           <View>
             <Text style={{ color: "green", fontWeight: "bold" }}>Save</Text>
           </View>
-        </Pressable>
+        </Pressable> */}
+        </View>
       </View>
     </ScrollView>
   );
@@ -539,7 +639,7 @@ const styles = StyleSheet.create({
     backgroundColor: "black",
   },
   heading: {
-    fontSize: 30,
+    fontSize: 25,
     fontWeight: "bold",
     color: "black",
     padding: 20,

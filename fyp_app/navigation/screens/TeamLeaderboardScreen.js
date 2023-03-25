@@ -133,7 +133,12 @@ export default function TeamLeaderboardScreen({ route, navigation }) {
     <View style={{ marginTop: 35 }}>
       <Text style={styles.heading}>Yesterday's Scores</Text>
       <Text style={styles.heading}>Team Leaderboard</Text>
-      <MyLeaderboard data={leaderboardScores} />
+      <MyLeaderboard
+        data={leaderboardScores}
+        sortByProp="score"
+        centerProp="name"
+        rhsProp="score"
+      />
     </View>
   );
 }

@@ -4,87 +4,87 @@
 const transportData = [
   {
     name: "dart",
-    gCo2ePerKm: 11,
+    kgCo2ePerKm: 0.011,
   },
   {
     name: "bus",
-    gCo2ePerKm: 15,
+    kgCo2ePerKm: 0.015,
   },
   {
     name: "luas",
-    gCo2ePerKm: 64,
+    kgCo2ePerKm: 0.064,
   },
   {
     name: "train",
-    gCo2ePerKm: 35,
+    kgCo2ePerKm: 0.035,
   },
   // ==============================================================================================================================
   {
     name: "smallDieselCar",
-    gCo2ePerKm: 142,
+    kgCo2ePerKm: 0.142,
   },
   {
     name: "smallPetrolCar",
-    gCo2ePerKm: 154,
+    kgCo2ePerKm: 0.154,
   },
   {
     name: "smallHybridCar",
-    gCo2ePerKm: 104,
+    kgCo2ePerKm: 0.104,
   },
   {
     name: "smallElectricCar",
-    gCo2ePerKm: 0,
+    kgCo2ePerKm: 0,
   },
   // ==============================================================================================================================
   {
     name: "mediumDieselCar",
-    gCo2ePerKm: 171,
+    kgCo2ePerKm: 0.171,
   },
   {
     name: "mediumPetrolCar",
-    gCo2ePerKm: 192,
+    kgCo2ePerKm: 0.192,
   },
   {
     name: "mediumHybridCar",
-    gCo2ePerKm: 109,
+    kgCo2ePerKm: 0.109,
   },
   {
     name: "mediumElectricCar",
-    gCo2ePerKm: 0,
+    kgCo2ePerKm: 0,
   },
   // ==============================================================================================================================
   {
     name: "largeDieselCar",
-    gCo2ePerKm: 209,
+    kgCo2ePerKm: 0.209,
   },
   {
     name: "largePetrolCar",
-    gCo2ePerKm: 283,
+    kgCo2ePerKm: 0.283,
   },
   {
     name: "largeHybridCar",
-    gCo2ePerKm: 132,
+    kgCo2ePerKm: 0.132,
   },
   {
     name: "largeElectricCar",
-    gCo2ePerKm: 0,
+    kgCo2ePerKm: 0,
   },
   // ==============================================================================================================================
   {
     name: "averageDieselCar",
-    gCo2ePerKm: 173,
+    kgCo2ePerKm: 0.173,
   },
   {
     name: "averagePetrolCar",
-    gCo2ePerKm: 181,
+    kgCo2ePerKm: 0.181,
   },
   {
     name: "averageHybridCar",
-    gCo2ePerKm: 115,
+    kgCo2ePerKm: 0.115,
   },
   {
     name: "averageElectricCar",
-    gCo2ePerKm: 0,
+    kgCo2ePerKm: 0,
   },
 ];
 

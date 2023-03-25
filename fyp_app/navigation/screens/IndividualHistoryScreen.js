@@ -1,7 +1,8 @@
 import { StatusBar } from "expo-status-bar";
 import { StyleSheet, Text, View } from "react-native";
 
-import Leaderboard from "react-native-leaderboard";
+// import Leaderboard from "react-native-leaderboard";
+import MyLeaderboard from "./MyLeaderboard";
 import EmptyHistoryScreen from "./EmptyHistoryScreen";
 
 import {
@@ -33,21 +34,31 @@ import database from "../../firebase-config";
  */
 export default function IndividualHistoryScreen({ route, navigation }) {
   const [scores, setScores] = useState([]);
+  // const [chartData, setChartData] = useState({labels: [], datasets: [], legend: ["KgCo2e"]});
   const isFocused = useIsFocused();
+
+  const sideMargin = 20;
 
   let userID = "Ky0lVuXZJbTZhp9kAj5vkTZOa8T2";
 
   const screenWidth = Dimensions.get("window").width;
 
   const chartConfig = {
-    backgroundGradientFrom: "#1E2923",
-    backgroundGradientFromOpacity: 0,
-    backgroundGradientTo: "#08130D",
-    backgroundGradientToOpacity: 0.5,
-    color: (opacity = 1) => `rgba(26, 255, 146, ${opacity})`,
+    backgroundGradientFrom: "#ffffff", // 1E2923
+    // backgroundGradientFromOpacity: 0,
+    backgroundGradientTo: "#ffffff", // 08130D
+    // backgroundGradientToOpacity: 0.5,
+    color: (opacity = 1) => `rgba(0, 150, 0, ${opacity})`,
     strokeWidth: 2, // optional, default 3
-    barPercentage: 0.5,
+    // barPercentage: 0.5,
+    barPercentage: 1,
     useShadowColorFromDataset: false, // optional
+    shadowOffset: {
+      width: 5,
+      height: 5,
+    },
+    shadowRadius: 5,
+    shadowOpacity: 0.4,
   };
 
   const data = {
@@ -55,11 +66,11 @@ export default function IndividualHistoryScreen({ route, navigation }) {
     datasets: [
       {
         data: [20, 45, 28, 80, 99, 43],
-        color: (opacity = 1) => `rgba(134, 65, 244, ${opacity})`, // optional
+        color: (opacity = 1) => `rgba(0, 244, 0, ${opacity})`, // optional
         strokeWidth: 2, // optional
       },
     ],
-    legend: ["Rainy Days"], // optional
+    legend: ["KgCo2e"], // optional
   };
 
   const leaderboardData = [
@@ -110,6 +121,7 @@ export default function IndividualHistoryScreen({ route, navigation }) {
           <StatusBar style="auto" />
           <LineChart
             data={data}
+            // data={scores}
             width={screenWidth}
             height={220}
             chartConfig={chartConfig}
@@ -117,7 +129,13 @@ export default function IndividualHistoryScreen({ route, navigation }) {
           <View style={{ margin: 10 }}></View>
           {/* sortBy is what is displayed on RHS, need to sort by date, but display score on RHS, not date */}
           {/* <Leaderboard data={leaderboardData} sortBy="score" labelBy="date" /> */}
-          <Leaderboard data={scores} sortBy="value" labelBy="date" />
+          {/* <Leaderboard data={scores} sortBy="value" labelBy="date" /> */}
+          <MyLeaderboard
+            data={scores}
+            sortByProp="date"
+            centerProp="date"
+            rhsProp="value"
+          />
         </View>
       )}
     </View>
