@@ -41,7 +41,6 @@ function App() {
           component={LogTransportScreen}
           options={{
             headerShown: true,
-            title: "",
           }}
         />
       </Stack.Navigator>

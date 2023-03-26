@@ -305,10 +305,12 @@ export default function HomeScreen({ route, navigation }) {
               {
                 value: Math.round(foodLogTotalCo2e * 100) / 100,
                 color: "rgb(84,219,234)",
+                shiftTextX: -10,
               },
               {
                 value: Math.round(transportLogTotalCo2e * 100) / 100,
                 color: "lightgreen",
+                shiftTextX: -10,
               },
             ]}
             innerCircleColor="#414141"
@@ -317,6 +319,9 @@ export default function HomeScreen({ route, navigation }) {
             showValuesAsLabels={true}
             showText
             textSize={18}
+            textColor="black"
+            textBackgroundRadius={25}
+            shiftInnerCenterX={5}
             showTextBackground={true}
             centerLabelComponent={() => {
               return (
@@ -326,6 +331,8 @@ export default function HomeScreen({ route, navigation }) {
                       color: "white",
                       fontSize: 18,
                       alignSelf: "center",
+                      textAlign: "center",
+                      width: "100%",
                     }}
                   >
                     {Math.round(
@@ -337,6 +344,8 @@ export default function HomeScreen({ route, navigation }) {
                       color: "white",
                       fontSize: 18,
                       alignSelf: "center",
+                      textAlign: "center",
+                      width: "100%",
                     }}
                   >
                     Total
