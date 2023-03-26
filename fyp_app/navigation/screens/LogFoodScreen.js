@@ -59,24 +59,14 @@ export default function LogFoodScreen({ route, navigation }) {
 
   /* TO-DO: Add conversions from pounds and ounces to grams and kilograms etc., */
   function calculateTotalEmissions() {
-    console.log("Beginning calculation");
-    console.log("Food selected: " + foodSelected);
-    console.log("Portion size: " + portionSize);
-    // let conversionFactor = 8 / 5;
-    // if (unitsOfDistanceSelected == "Miles") {
-    // distanceEntered *= conversionFactor;
-    // }
-
     let kgCo2ePerKg = 0;
-    console.log("Food data: \n" + JSON.stringify(foodData));
     for (let i = 0; i < foodData.length; i++) {
       if (foodSelected == foodData[i].name) {
         kgCo2ePerKg = foodData[i].kgCo2ePerKg;
         break;
       }
     }
-    let totalEmissions = kgCo2ePerKg * (portionSize / 1000); // /1000 to get grams entered
-    /* round emissions to 2 decimal places and save as number, not a string! */
+    let totalEmissions = kgCo2ePerKg * (portionSize / 1000); // Divide by 1000 to get grams entered
     totalEmissions = Math.round(totalEmissions * 100) / 100;
     return totalEmissions;
   }
@@ -84,7 +74,6 @@ export default function LogFoodScreen({ route, navigation }) {
   async function addLogToDatabase(log) {
     const docData = {
       category: "food",
-      /* make sure co2e is of type number, not string! */
       co2e: calculateTotalEmissions(),
       date: getTodaysDate(),
       name: foodSelected,
@@ -92,17 +81,14 @@ export default function LogFoodScreen({ route, navigation }) {
       portionUnit: portionUnitSelected,
       userID: userID,
     };
-
-    // Add a new document where firebase auto-generate unique id.
-    const docRef = await addDoc(collection(database, "emission_logs"), docData);
-    console.log("Document written with ID: ", docRef.id);
-    // foodDummyData.push(log);
+    /* Add a new document where firebase auto-generates unique id */
+    await addDoc(collection(database, "emission_logs"), docData);
   }
 
   function getTodaysDate() {
-    let date = new Date().getDate(); //To get the Current Date
-    let month = new Date().getMonth() + 1; //To get the Current Month
-    let year = new Date().getFullYear(); //To get the Current Year
+    let date = new Date().getDate();
+    let month = new Date().getMonth() + 1;
+    let year = new Date().getFullYear();
     return date + "/" + month + "/" + year;
   }
 
@@ -128,7 +114,7 @@ export default function LogFoodScreen({ route, navigation }) {
         }}
         defaultButtonText={"Select food type"}
         buttonTextAfterSelection={(selectedItem, index) => {
-          return foodSelected; // resets to "" after cancel selected
+          return foodSelected;
         }}
         rowTextForSelection={(item, index) => {
           return item.name;
@@ -155,7 +141,7 @@ export default function LogFoodScreen({ route, navigation }) {
           style={styles.dropdown1ButtonStyle}
           onChangeText={setPortionSize}
           value={portionSize}
-          placeholder="useless placeholder" // need to move this text into center
+          placeholder="e.g. 100"
           keyboardType="numeric"
           textAlign="center"
         />
@@ -190,34 +176,6 @@ export default function LogFoodScreen({ route, navigation }) {
         rowStyle={styles.dropdown1RowStyle}
         rowTextStyle={styles.dropdown1RowTxtStyle}
       />
-      {/* Display buttons for pounds, grams, ounces, ml... */}
-      {/* <View>
-        {portionSizesData.map((portionSize) => {
-          return (
-            <View style={styles.item}>
-              <Pressable
-                onPress={() => {
-                  Alert.alert("Alert Title", portionSize.name + " Selected", [
-                    {
-                      text: "Cancel",
-                      onPress: () => console.log("Cancel Pressed"),
-                      style: "cancel",
-                    },
-                    {
-                      text: "Save",
-                      onPress: () => console.log("Save Pressed"),
-                    },
-                  ]);
-                }}
-              >
-                <View>
-                  <Text>{portionSize.name}</Text>
-                </View>
-              </Pressable>
-            </View>
-          );
-        })}
-      </View> */}
       <View style={{ padding: 10, marginTop: 30 }}></View>
       <View style={{ flexDirection: "row", justifyContent: "space-evenly" }}>
         <ActionButton
@@ -276,68 +234,11 @@ export default function LogFoodScreen({ route, navigation }) {
             );
           }}
         />
-        {/* <Pressable
-          onPress={() => {
-            Alert.alert(
-              "Alert Title",
-              "Selecting reset will lose your current progress",
-              [
-                {
-                  text: "Cancel",
-                  onPress: () => {
-                    // do nothing
-                  },
-                  style: "cancel",
-                },
-                {
-                  text: "Reset",
-                  onPress: () => {
-                    resetData();
-                    setRefreshPage(!refreshPage);
-                  },
-                },
-              ]
-            );
-          }}
-          style={styles.button}
-          // style={{ color: "FF0000" }} // red
-        >
-          <View>
-            <Text style={{ color: "red", fontWeight: "bold" }}>Reset</Text>
-          </View>
-        </Pressable>
-        <Pressable
-          onPress={() => {
-            Alert.alert("Please Confirm", "Save Selected", [
-              {
-                text: "Cancel",
-                onPress: () => {
-                  // do nothing
-                },
-                style: "cancel",
-              },
-              {
-                text: "Continue",
-                onPress: () => {
-                  addLogToDatabase();
-                  navigation.pop();
-                },
-              },
-            ]);
-          }}
-          style={styles.button}
-          // style={{ backgroundColor: "00FF00" }} // green
-        >
-          <View>
-            <Text style={{ color: "green", fontWeight: "bold" }}>Save</Text>
-          </View>
-        </Pressable> */}
       </View>
     </ScrollView>
   );
 }
 
-// styling for different unit sizes for portion size of food entry
 const styles = StyleSheet.create({
   container: {
     padding: 50,

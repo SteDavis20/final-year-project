@@ -50,21 +50,17 @@ function NavBar({ route, navigation }) {
           } else if (route.name === IndividualHistoryName) {
             iconName = "bar-chart";
           }
-
+          const tabBarActiveTintColor = "green";
+          const tabBarInactiveTintColor = "gray";
           if (focused) {
-            color = "green"; // black home
+            color = tabBarActiveTintColor;
           } else {
-            color = "grey";
+            color = tabBarInactiveTintColor;
           }
-          // You can return any component that you like here!
           return <Icon name={iconName} size={size} color={color} />;
         },
-        tabBarActiveTintColor: "green",
-        tabBarInactiveTintColor: "gray",
       })}
     >
-      {/* screenOptions goes here to highlight selected screen */}
-
       <Tab.Screen
         name={homeName}
         component={HomeScreen}

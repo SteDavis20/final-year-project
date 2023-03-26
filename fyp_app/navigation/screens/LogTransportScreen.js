@@ -117,41 +117,20 @@ export default function LogTransportScreen({ route, navigation }) {
 
   useEffect(() => {
     if (mapIdentifier != "") {
-      //   console.log("Should work now!");
-      //   console.log("Map identifier: " + mapIdentifier);
-      //   let log = {
-      //     id: transportDummyData.length + 1,
-      //     name: mapIdentifier,
-      //     co2e: calculateTotalEmissions(),
-      //   };
-      //   console.log("New log: " + JSON.stringify(log));
       addLogToDatabase();
-      //   addLogToHomepage(log);
     }
   }, [mapIdentifier]);
 
   function calculateTotalEmissions() {
-    console.log("Beginning calculation");
-    console.log("Distance: " + distanceEntered);
-    console.log("Method of transport: " + mapIdentifier);
     let conversionFactor = 8 / 5;
     let distance = distanceEntered;
     if (unitsOfDistanceSelected == "Miles") {
       distance *= conversionFactor;
     }
-
     /* Parse json data to get co2e depending on car, luas, fuel type, car size etc., */
     let kgCo2ePerKm = 0;
-    console.log("Transport data: \n" + JSON.stringify(transportData));
     for (let i = 0; i < transportData.length; i++) {
-      console.log(
-        "Map identifier: " +
-          mapIdentifier +
-          "\nTransport Index identifier: " +
-          transportData[i].name
-      );
       if (mapIdentifier == transportData[i].name) {
-        console.log("Match found in transport data!");
         kgCo2ePerKm = transportData[i].kgCo2ePerKm;
         break;
       }
@@ -160,17 +139,10 @@ export default function LogTransportScreen({ route, navigation }) {
     if (modeOfTransportSelected == "car") {
       totalEmissions /= numberOfPassengers;
     }
-    // instead of all these if statements, use naming system of: car size + fuel type
-    // set or update this key based on user input
-    /* round emissions to 2 decimal places and save as a number, not a string! */
     totalEmissions = Math.round(totalEmissions * 100) / 100;
     return totalEmissions;
   }
 
-  /*
-   * Can add other info depending on mode of transport selected.
-   * For example, car would include fuel type, car size
-   */
   async function addLogToDatabase() {
     const docData = {
       category: "transport",
@@ -179,16 +151,10 @@ export default function LogTransportScreen({ route, navigation }) {
       name: modeOfTransportSelected.toLowerCase(),
       distanceTravelled: distanceEntered,
       unitOfDistance: unitsOfDistanceSelected,
-      // carSize: carSizeSelected,
-      // fuelType: fuelTypeSelected,
-      // numberOfPassengers: numberOfPassengers,
       userID: userID,
     };
-
-    // Add a new document where firebase auto-generate unique id.
-    const docRef = await addDoc(collection(database, "emission_logs"), docData);
-    console.log("Document written with ID: ", docRef.id);
-    // foodDummyData.push(log);
+    /* Add a new document where firebase auto-generates unique id */
+    await addDoc(collection(database, "emission_logs"), docData);
   }
 
   function getTodaysDate() {
@@ -212,7 +178,6 @@ export default function LogTransportScreen({ route, navigation }) {
     <ScrollView
       style={{
         backgroundColor: "#BEFFDC",
-        // marginTop: 35,
       }}
     >
       <View style={{ marginHorizontal: sideMargin }}>
@@ -246,34 +211,9 @@ export default function LogTransportScreen({ route, navigation }) {
           rowTextStyle={styles.dropdown1RowTxtStyle}
         />
         {/* ==================================================================================================== */}
-        {/* Have button for each option to select  */}
-        {/* {transportData.map((modeOfTransport) => {
-        return (
-          <View>
-            <Pressable
-              onPress={() => {
-                Alert.alert("Alert Title", modeOfTransport.name + " Selected", [
-                  {
-                    text: "Cancel",
-                    onPress: () => console.log("Cancel Pressed"),
-                    style: "cancel",
-                  },
-                  { text: "Save", onPress: () => console.log("Save Pressed") },
-                ]);
-              }}
-            >
-              <View>
-                <Text>{modeOfTransport.name}</Text>
-              </View>
-            </Pressable>
-          </View>
-        );
-      })} */}
-
-        {/* ==================================================================================================== */}
         {modeOfTransportSelected == "Car" && (
           <View>
-            <Text style={styles.heading}>Car Size - Add photo</Text>
+            <Text style={styles.heading}>Car Size</Text>
             <SelectDropdown
               data={carSizesData}
               onSelect={(selectedItem, index) => {
@@ -302,34 +242,7 @@ export default function LogTransportScreen({ route, navigation }) {
               rowStyle={styles.dropdown1RowStyle}
               rowTextStyle={styles.dropdown1RowTxtStyle}
             />
-
             {/* ==================================================================================================== */}
-            {/* Have button for each car size type and user selects button  */}
-            {/* {carSizesData.map((carSize) => {
-        return (
-          <View>
-            <Pressable
-              onPress={() => {
-                Alert.alert("Alert Title", modeOfTransport.name + " Selected", [
-                  {
-                    text: "Cancel",
-                    onPress: () => console.log("Cancel Pressed"),
-                    style: "cancel",
-                  },
-                  { text: "Save", onPress: () => console.log("Save Pressed") },
-                ]);
-              }}
-            >
-              <View>
-                <Text>{modeOfTransport.name}</Text>
-              </View>
-            </Pressable>
-          </View>
-        );
-      })} */}
-
-            {/* ==================================================================================================== */}
-
             <Text style={styles.heading}>Fuel Type</Text>
             <SelectDropdown
               data={carFuelTypeData}
@@ -368,12 +281,11 @@ export default function LogTransportScreen({ route, navigation }) {
             style={styles.dropdown1ButtonStyle}
             onChangeText={setDistanceEntered}
             value={distanceEntered}
-            placeholder="Enter distance travelled"
+            placeholder="e.g. 20"
             keyboardType="numeric"
             textAlign="center"
           />
         </SafeAreaView>
-
         {/* ==================================================================================================== */}
         <View style={{ margin: 20 }}></View>
         <SelectDropdown
@@ -404,46 +316,23 @@ export default function LogTransportScreen({ route, navigation }) {
           rowStyle={styles.dropdown1RowStyle}
           rowTextStyle={styles.dropdown1RowTxtStyle}
         />
-
-        {/* Have button for each car size type and user selects button  */}
-        {/* {unitsOfDistanceData.map((unitsOfDistance) => {
-        return (
-          <View>
-            <Pressable
-              onPress={() => {
-                Alert.alert("Alert Title", unitsOfDistance.name + " Selected", [
-                  {
-                    text: "Cancel",
-                    onPress: () => console.log("Cancel Pressed"),
-                    style: "cancel",
-                  },
-                  { text: "Save", onPress: () => console.log("Save Pressed") },
-                ]);
-              }}
-            >
-              <View>
-                <Text>{unitsOfDistance.name}</Text>
-              </View>
-            </Pressable>
-          </View>
-        );
-      })} */}
-
         {/* ==================================================================================================== */}
-        {/* Have button for each car size type and user selects button  */}
-        <Text style={styles.heading}>Number of Passengers</Text>
-        <SafeAreaView>
-          <TextInput
-            style={styles.dropdown1ButtonStyle}
-            onChangeText={setNumberOfPassengers}
-            value={numberOfPassengers}
-            placeholder="Enter number of passengers"
-            keyboardType="numeric"
-            textAlign="center"
-          />
-        </SafeAreaView>
+        {modeOfTransportSelected == "Car" && (
+          <>
+            <Text style={styles.heading}>Number of Passengers</Text>
+            <SafeAreaView>
+              <TextInput
+                style={styles.dropdown1ButtonStyle}
+                onChangeText={setNumberOfPassengers}
+                value={numberOfPassengers}
+                placeholder="Enter number of passengers"
+                keyboardType="numeric"
+                textAlign="center"
+              />
+            </SafeAreaView>
+          </>
+        )}
         {/* =================================================================================================== */}
-
         <View style={{ padding: 10 }}></View>
         <View style={{ flexDirection: "row", justifyContent: "space-evenly" }}>
           <ActionButton
@@ -493,26 +382,11 @@ export default function LogTransportScreen({ route, navigation }) {
                       if (modeOfTransportSelected == "Car") {
                         let carSizeDecapitalised =
                           carSizeSelected.toLowerCase();
-                        // console.log(
-                        // "Car size decapitalised: " + carSizeDecapitalised
-                        // );
-                        // console.log("Fuel type selected: " + fuelTypeSelected);
-                        // console.log(
-                        // "Mode of transport selected: " +
-                        // modeOfTransportSelected
-                        // );
-                        // console.log(
-                        // "New identifier: " +
-                        // carSizeDecapitalised +
-                        // fuelTypeSelected +
-                        // modeOfTransportSelected
-                        // );
                         setMapIdentifier(
                           carSizeDecapitalised +
                             fuelTypeSelected +
                             modeOfTransportSelected
                         );
-                        // console.log("New identifier: " + mapIdentifier);
                       } else {
                         let modeOfTransportDecapitalised =
                           modeOfTransportSelected.toLowerCase();
@@ -525,88 +399,12 @@ export default function LogTransportScreen({ route, navigation }) {
               );
             }}
           />
-
-          {/* <Pressable
-          onPress={() => {
-            Alert.alert(
-              "Alert Title",
-              "Selecting reset will lose your current progress",
-              [
-                {
-                  text: "Cancel",
-                  onPress: () => console.log("Cancel Pressed"),
-                  style: "cancel",
-                },
-                {
-                  text: "Reset",
-                  onPress: () => console.log("Reset Pressed"),
-                },
-              ]
-            );
-          }}
-          style={styles.button}
-          // style={{ color: "FF0000" }} // red
-        >
-          <View>
-            <Text style={{ color: "red", fontWeight: "bold" }}>Reset</Text>
-          </View>
-        </Pressable> */}
-          {/* <Pressable
-          onPress={() => {
-            Alert.alert("Alert Title", "Save Selected", [
-              {
-                text: "Cancel",
-                onPress: () => console.log("Cancel Pressed"),
-                style: "cancel",
-              },
-              {
-                text: "Continue",
-                onPress: () => {
-                  if (modeOfTransportSelected == "Car") {
-                    let carSizeDecapitalised = carSizeSelected.toLowerCase();
-                    console.log(
-                      "Car size decapitalised: " + carSizeDecapitalised
-                    );
-                    console.log("Fuel type selected: " + fuelTypeSelected);
-                    console.log(
-                      "Mode of transport selected: " + modeOfTransportSelected
-                    );
-                    console.log(
-                      "New identifier: " +
-                        carSizeDecapitalised +
-                        fuelTypeSelected +
-                        modeOfTransportSelected
-                    );
-                    setMapIdentifier(
-                      carSizeDecapitalised +
-                        fuelTypeSelected +
-                        modeOfTransportSelected
-                    );
-                    console.log("New identifier: " + mapIdentifier);
-                  } else {
-                    let modeOfTransportDecapitalised =
-                      modeOfTransportSelected.toLowerCase();
-                    setMapIdentifier(modeOfTransportDecapitalised);
-                  }
-                  navigation.pop();
-                },
-              },
-            ]);
-          }}
-          style={styles.button}
-          // style={{ backgroundColor: "00FF00" }} // green
-        >
-          <View>
-            <Text style={{ color: "green", fontWeight: "bold" }}>Save</Text>
-          </View>
-        </Pressable> */}
         </View>
       </View>
     </ScrollView>
   );
 }
 
-// styling for different unit sizes for portion size of food entry
 const styles = StyleSheet.create({
   container: {
     padding: 50,

@@ -33,8 +33,6 @@ function App() {
           options={{
             headerShown: true,
           }}
-          // style title...
-          // title: "",setTransportLogTotalCo2e(tempTotalTransportCo2e);
         />
         <Stack.Screen
           name="Log Transport"

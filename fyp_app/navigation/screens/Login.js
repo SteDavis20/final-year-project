@@ -24,46 +24,45 @@ function Login({ navigation }) {
   const [password, setPassword] = useState("");
 
   function attemptLogin() {
-    // navigation.navigate("HomePage", { userID: "Ky0lVuXZJbTZhp9kAj5vkTZOa8T2" });
     const auth = getAuth(database);
-    signInWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
-        const user = userCredential.user;
-        let uniqueUserID = user.uid;
-        navigation.navigate("HomePage", { userID: uniqueUserID });
-        // navigation.navigate("Home", uniqueUserID);
-      })
-      .catch((error) => {
-        if (error.code === "auth/wrong-password") {
-          Alert.alert("Incorrect Login Details!", "Wrong password", [
-            {
-              text: "OK",
-            },
-          ]);
-        } else if (error.code === "auth/invalid-email") {
-          Alert.alert("Incorrect Login Details!", "Invalid email", [
-            {
-              text: "OK",
-            },
-          ]);
-        } else if (error.code === "auth/user-not-found") {
-          Alert.alert(
-            "Incorrect Login Details!",
-            "No account for provided email",
-            [
-              {
-                text: "OK",
-              },
-            ]
-          );
-        } else {
-          Alert.alert("Incorrect Login Details!", "Please try again", [
-            {
-              text: "OK",
-            },
-          ]);
-        }
-      });
+    navigation.navigate("HomePage", { userID: "Ky0lVuXZJbTZhp9kAj5vkTZOa8T2" });
+    // signInWithEmailAndPassword(auth, email, password)
+    //   .then((userCredential) => {
+    //     const user = userCredential.user;
+    //     let uniqueUserID = user.uid;
+    //     navigation.navigate("HomePage", { userID: uniqueUserID });
+    //   })
+    //   .catch((error) => {
+    //     if (error.code === "auth/wrong-password") {
+    //       Alert.alert("Incorrect Login Details!", "Wrong password", [
+    //         {
+    //           text: "OK",
+    //         },
+    //       ]);
+    //     } else if (error.code === "auth/invalid-email") {
+    //       Alert.alert("Incorrect Login Details!", "Invalid email", [
+    //         {
+    //           text: "OK",
+    //         },
+    //       ]);
+    //     } else if (error.code === "auth/user-not-found") {
+    //       Alert.alert(
+    //         "Incorrect Login Details!",
+    //         "No account for provided email",
+    //         [
+    //           {
+    //             text: "OK",
+    //           },
+    //         ]
+    //       );
+    //     } else {
+    //       Alert.alert("Incorrect Login Details!", "Please try again", [
+    //         {
+    //           text: "OK",
+    //         },
+    //       ]);
+    //     }
+    //   });
   }
 
   return (

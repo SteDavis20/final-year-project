@@ -4,12 +4,7 @@ import { StyleSheet, Text, View, Alert, Button } from "react-native";
 
 import { useIsFocused } from "@react-navigation/native";
 
-// import Leaderboard from "react-native-leaderboard";
 import MyLeaderboard from "./MyLeaderboard";
-
-/*
- *   Is there only 1 individual leaderboard - YES
- */
 
 import {
   collection,
@@ -37,39 +32,32 @@ export default function IndividualLeaderboardScreen({ route, navigation }) {
     var date = new Date().getDate() - 1;
     var month = new Date().getMonth() + 1;
     var year = new Date().getFullYear();
-
     setYesterdaysDate(date + "/" + month + "/" + year);
   }
 
-  /* useEffect takes a callback function as parameter, cannot put await before this function so immediately invoke nested async function as below */
   useEffect(() => {
     async function getScores() {
       setDate();
-      await getLeaderboardScores(); // getLeaderboardScores returns [] instead of [...]
+      await getLeaderboardScores();
     }
     getScores();
   }, [yesterdaysDate]);
 
   async function getScoreDocuments() {
-    /* Gets user scores, but not user's name, only user's ID */
     const q = query(
       collection(database, "scores"),
       where("date", "==", yesterdaysDate)
     );
-    /* Get score value and userID */
     const querySnapshot = await getDocs(q);
-    return querySnapshot.docs; // .docs is the array
+    return querySnapshot.docs;
   }
 
   async function getUserDocument(scoreDocScore, scoreDocUserID) {
-    /* Get user document where the uid of the user document == user id stored in score document */
+    /* Get user document with matching userID stored in score document */
     const docRef = doc(database, "users", scoreDocUserID);
     const userDocument = await getDoc(docRef);
-
     if (userDocument.exists()) {
-      // console.log("uid? ", scoreDocUserID);
-      let newEntry = "";
-      newEntry = {
+      let newEntry = {
         name: userDocument.data().name,
         score: scoreDocScore,
         isCurrentUser: scoreDocUserID == userID,
@@ -80,18 +68,9 @@ export default function IndividualLeaderboardScreen({ route, navigation }) {
     }
   }
 
-  /* UserID for user is now found by the document ID, there is not userID field in the user document anymore. */
   async function getLeaderboardScores() {
-    /*
-     * Get score documents where date = yesterdaysDate
-     */
     let scoreDocuments = await getScoreDocuments();
-    // const data = [...leaderboardScores];
     let data = [];
-
-    /*
-     *   Get user documents where scoreDoc.id = userDoc.id
-     */
     await Promise.all(
       scoreDocuments.map(async (scoreDocument) => {
         let tempData = await getUserDocument(

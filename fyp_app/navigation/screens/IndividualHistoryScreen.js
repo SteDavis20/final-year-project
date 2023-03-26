@@ -34,25 +34,19 @@ import database from "../../firebase-config";
  */
 export default function IndividualHistoryScreen({ route, navigation }) {
   const [scores, setScores] = useState([]);
-  // const [chartData, setChartData] = useState({labels: [], datasets: [], legend: ["KgCo2e"]});
   const isFocused = useIsFocused();
-
   const sideMargin = 20;
-
-  let userID = "Ky0lVuXZJbTZhp9kAj5vkTZOa8T2";
-
+  const { userID } = route.params;
+  // let userID = "Ky0lVuXZJbTZhp9kAj5vkTZOa8T2";
   const screenWidth = Dimensions.get("window").width;
 
   const chartConfig = {
-    backgroundGradientFrom: "#ffffff", // 1E2923
-    // backgroundGradientFromOpacity: 0,
-    backgroundGradientTo: "#ffffff", // 08130D
-    // backgroundGradientToOpacity: 0.5,
+    backgroundGradientFrom: "#ffffff",
+    backgroundGradientTo: "#ffffff",
     color: (opacity = 1) => `rgba(0, 150, 0, ${opacity})`,
-    strokeWidth: 2, // optional, default 3
-    // barPercentage: 0.5,
+    strokeWidth: 2,
     barPercentage: 1,
-    useShadowColorFromDataset: false, // optional
+    useShadowColorFromDataset: false,
     shadowOffset: {
       width: 5,
       height: 5,
@@ -61,39 +55,62 @@ export default function IndividualHistoryScreen({ route, navigation }) {
     shadowOpacity: 0.4,
   };
 
+  function convertScoresDataToChartFormat(scoresData) {
+    let dates = [];
+    let scores = [];
+    console.log("HERE: ", scoresData);
+    console.log(typeof scoresData);
+    try {
+      scoresData.map((scoreData) => {
+        dates.push(scoreData.date);
+        scores.push(scoreData.value);
+      });
+      dates.sort();
+      scores.sort();
+      /* after 6 or 7 labels, there is no more room to label the axis, only display 5 most recent labels? */
+      let myData = {
+        labels: dates,
+        datasets: [
+          {
+            data: scores,
+            color: (opacity = 1) => `rgba(0, 244, 0, ${opacity})`,
+            strokeWidth: 2,
+          },
+        ],
+        legend: ["KgCo2e"],
+      };
+      return myData;
+    } catch (error) {
+      console.log(error);
+    }
+    return {
+      labels: ["n/a"],
+      datasets: [
+        {
+          data: [0],
+          color: (opacity = 1) => `rgba(0, 244, 0, ${opacity})`,
+          strokeWidth: 2,
+        },
+      ],
+      legend: ["KgCo2e"],
+    };
+  }
+
   const data = {
     labels: ["January", "February", "March", "April", "May", "June"],
     datasets: [
       {
         data: [20, 45, 28, 80, 99, 43],
-        color: (opacity = 1) => `rgba(0, 244, 0, ${opacity})`, // optional
-        strokeWidth: 2, // optional
+        color: (opacity = 1) => `rgba(0, 244, 0, ${opacity})`,
+        strokeWidth: 2,
       },
     ],
-    legend: ["KgCo2e"], // optional
+    legend: ["KgCo2e"],
   };
 
-  const leaderboardData = [
-    { date: "Monday 01/01/23", score: 2 },
-    { date: "Tuesday 02/01/23", score: 7 },
-    { date: "Wednesday 03/01/23", score: 5 },
-    { date: "Thursday 04/01/23", score: 4 },
-    { date: "Friday 05/01/23", score: 6 },
-  ]; //can also be an object of objects!: data: {a:{}, b:{}}
-
-  // try {
-  //   userID = route.params.userID;
-  // } catch (error) {
-  //   // no userID passed
-  // }
-
-  /* Load when first time going to screen so when scores.length == 0, but need to update new score(s) after completing a new day so this won't work */
   useEffect(() => {
-    // load scores
     async function getScores() {
-      // if (emissionLogs.length == 0) {
       setScores(await getIndividualScores());
-      // }
     }
     getScores();
   }, [isFocused]);
@@ -119,9 +136,10 @@ export default function IndividualHistoryScreen({ route, navigation }) {
       {scores.length > 0 && (
         <View>
           <StatusBar style="auto" />
+          {console.log(convertScoresDataToChartFormat(scores))}
           <LineChart
-            data={data}
-            // data={scores}
+            // data={data}
+            data={convertScoresDataToChartFormat(scores)}
             width={screenWidth}
             height={220}
             chartConfig={chartConfig}

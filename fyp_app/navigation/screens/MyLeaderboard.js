@@ -1,12 +1,8 @@
 import React, { useState } from "react";
 import { StyleSheet, View, Text, FlatList } from "react-native";
 
-/*
- * Need to sort data based on highest to lowest scores
- * Style data
- */
 function MyLeaderboard({ data, sortByProp, centerProp, rhsProp }) {
-  /* Sort by descending scores*/
+  /* Sort by descending values */
   const sortData = (data) => {
     const sortedData = [...data].sort(
       (item1, item2) => item2[sortByProp] - item1[sortByProp]
@@ -39,7 +35,6 @@ function MyLeaderboard({ data, sortByProp, centerProp, rhsProp }) {
   data = sortData(data);
   return (
     <View style={styles.container}>
-      {/* <Text style={styles.title}>Leaderboard</Text> */}
       <FlatList
         data={data}
         renderItem={renderItem}

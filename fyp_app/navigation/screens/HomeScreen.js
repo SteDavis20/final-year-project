@@ -64,12 +64,9 @@ export default function HomeScreen({ route, navigation }) {
   /* When a new day, need to set emissionLogs back to empty */
   /* useEffect takes a callback function as parameter, cannot put await before this function so immediately invoke nested async function as below */
   useEffect(() => {
-    /* Only call this fetch when user 1st opens the app */
     async function getLogs() {
-      // if (emissionLogs.length == 0) {
       setDate();
       setEmissionLogs(await getEmissionLogsFromDatabase());
-      // }
     }
     getLogs();
     async function getUserName() {
@@ -84,14 +81,10 @@ export default function HomeScreen({ route, navigation }) {
 
   /* Firebase date saved as string in the form: 7/3/2023 */
   function setDate() {
-    var date = new Date().getDate(); //To get the Current Date
-    var month = new Date().getMonth() + 1; //To get the Current Month
-    var year = new Date().getFullYear(); //To get the Current Year
-
-    setTodaysDate(
-      // date + "/" + month + "/" + year + " " + hours + ":" + min + ":" + sec
-      date + "/" + month + "/" + year
-    );
+    var date = new Date().getDate();
+    var month = new Date().getMonth() + 1;
+    var year = new Date().getFullYear();
+    setTodaysDate(date + "/" + month + "/" + year);
   }
 
   /*
@@ -115,34 +108,32 @@ export default function HomeScreen({ route, navigation }) {
    * it doubles the emissions every single time because the previous state is saved and then the same data is added over and over and over.
    */
   async function getEmissionLogsFromDatabase() {
-    return new Promise(async (resolve, reject) => {
-      let databaseEmissionLogs = [];
-      let tempFoodLogs = [];
-      let tempTransportLogs = [];
-      let tempTotalFoodCo2e = 0;
-      let tempTotalTransportCo2e = 0;
-      const q = query(
-        collection(database, "emission_logs"),
-        where("userID", "==", userID),
-        where("date", "==", todaysDate)
-      );
-      const querySnapshot = await getDocs(q);
-      querySnapshot.forEach((document) => {
-        if (document.data().category == "food") {
-          tempFoodLogs.push(document.data());
-          tempTotalFoodCo2e += document.data().co2e;
-        } else if (document.data().category == "transport") {
-          tempTransportLogs.push(document.data());
-          tempTotalTransportCo2e += document.data().co2e;
-        }
-        databaseEmissionLogs.push(document.data());
-      });
-      setFoodLogs(tempFoodLogs);
-      setTransportLogs(tempTransportLogs);
-      setFoodLogTotalCo2e(tempTotalFoodCo2e);
-      setTransportLogTotalCo2e(tempTotalTransportCo2e);
-      resolve(databaseEmissionLogs);
+    let databaseEmissionLogs = [];
+    let tempFoodLogs = [];
+    let tempTransportLogs = [];
+    let tempTotalFoodCo2e = 0;
+    let tempTotalTransportCo2e = 0;
+    const q = query(
+      collection(database, "emission_logs"),
+      where("userID", "==", userID),
+      where("date", "==", todaysDate)
+    );
+    const querySnapshot = await getDocs(q);
+    querySnapshot.forEach((document) => {
+      if (document.data().category == "food") {
+        tempFoodLogs.push(document.data());
+        tempTotalFoodCo2e += document.data().co2e;
+      } else if (document.data().category == "transport") {
+        tempTransportLogs.push(document.data());
+        tempTotalTransportCo2e += document.data().co2e;
+      }
+      databaseEmissionLogs.push(document.data());
     });
+    setFoodLogs(tempFoodLogs);
+    setTransportLogs(tempTransportLogs);
+    setFoodLogTotalCo2e(tempTotalFoodCo2e);
+    setTransportLogTotalCo2e(tempTotalTransportCo2e);
+    return databaseEmissionLogs;
   }
 
   /*
@@ -151,11 +142,8 @@ export default function HomeScreen({ route, navigation }) {
    */
   useEffect(() => {
     async function generateScores() {
-      // if (checkedScoreGeneration == false) {
       setYesterdaysDateHelper();
       await checkScoresExist();
-      // setCheckedScoreGeneration(true);
-      // }
     }
     generateScores();
   }, [isFocused, yesterdaysDate]);
@@ -182,17 +170,12 @@ export default function HomeScreen({ route, navigation }) {
 
   /* Creates and pushes score document for each user for the previous day to firebase */
   async function generateUserScores() {
-    /* Get emission logs from firebase where date == yesterdaysDate */
-    /* Get emmision log documents */
     const q = query(
       collection(database, "emission_logs"),
       where("date", "==", yesterdaysDate)
     );
     const emissionLogDocuments = (await getDocs(q)).docs;
-    /* Iterate through emission log documents, adding the emission value to that user's sum */
     let data = [];
-    /* get co2e and the userID of the emission log */
-    /* if array.contains userID, add co2e to total for that user, else add new object to the array with userID and co2e as the total score */
     emissionLogDocuments.map((emissionLogDocument) => {
       let co2e = emissionLogDocument.data().co2e;
       let userID = emissionLogDocument.data().userID;
@@ -200,21 +183,22 @@ export default function HomeScreen({ route, navigation }) {
       let index = data.findIndex((obj) => {
         return obj.hasOwnProperty(key) && obj[key] == userID;
       });
+      /* user exists, add co2e to user's score */
       if (index != -1) {
-        // user exists, add co2e to user's score
         let prevScore = data[index].score;
         data[index] = { userID: userID, score: prevScore + co2e };
       } else {
-        // user does not exist, add userID and co2e as score to the data
+        /* user does not exist, add userID and co2e as score to the data */
         data.push({ userID: userID, score: co2e });
       }
     });
-    /* After iterating through all emmision log documents, create a score document with yesterdaysDate, the userID and the user's score for the day */
+    /* After iterating through all emmision log documents, create a score document
+     * with yesterdaysDate, the userID and the user's score for the day */
     await Promise.all(
       data.map(async (userScore) => {
-        // Add a new document with auto generated id.
+        /* Add a new document with auto generated id. */
         let score = getScoreFromCo2(userScore.score);
-        const docRef = await addDoc(collection(database, "scores"), {
+        await addDoc(collection(database, "scores"), {
           date: yesterdaysDate,
           userID: userScore.userID,
           value: score,
@@ -258,14 +242,8 @@ export default function HomeScreen({ route, navigation }) {
 
   return (
     <View style={{ marginTop: 35 }}>
-      <ScrollView
-        // showsVerticalScrollIndicator={false}
-        style={{ backgroundColor: myBackgroundColour }}
-      >
+      <ScrollView style={{ backgroundColor: myBackgroundColour }}>
         <Text style={styles.heading}>Home</Text>
-        {/* <Text style={styles.welcomeMessage}>
-          Hi {userName}, here are your logs for today
-        </Text> */}
         <View
           style={{
             marginVertical: 10,
@@ -318,7 +296,7 @@ export default function HomeScreen({ route, navigation }) {
             innerCircleBorderColor={"white"}
             showValuesAsLabels={true}
             showText
-            textSize={18}
+            textSize={12}
             textColor="black"
             textBackgroundRadius={25}
             shiftInnerCenterX={5}
@@ -379,18 +357,16 @@ export default function HomeScreen({ route, navigation }) {
         <View>
           <ScrollView>
             <Text style={styles.heading}>Food</Text>
-            {/* <Text style={styles.heading}>Emissions</Text> */}
             <View>
-              {/* {foodDummyData.map((food) => { */}
               {foodLogs.length > 0 &&
                 foodLogs.map((food) => {
                   return (
                     <View>
                       <EmissionLogButton
-                        /* icon= */ emissionName={food.name}
+                        emissionName={food.name}
                         co2eValue={food.co2e}
                         unit={"kgCo2e"}
-                        /* onPress={} */ colour={"white"}
+                        colour={"white"}
                         fontSize={20}
                         iconName={"cutlery"}
                       />
@@ -424,11 +400,9 @@ export default function HomeScreen({ route, navigation }) {
       <View
         style={{
           bottom: 100,
-          alignItems: "flex-end" /*flexDirection: "row-reverse" */,
+          alignItems: "flex-end",
         }}
       >
-        {/* <Pressable onPress={() => setModalVisible(true)}> */}
-        {/* <Pressable onPress={() => navigation.navigate("Log Food")}> */}
         <Pressable
           onPress={() => {
             Alert.alert("Log Emission Type", "", [
@@ -437,7 +411,6 @@ export default function HomeScreen({ route, navigation }) {
                 onPress: () => {
                   navigation.navigate("Log Food", { userID: userID });
                 },
-                // style: "cancel",
               },
               {
                 text: "Transport",
@@ -448,7 +421,7 @@ export default function HomeScreen({ route, navigation }) {
               {
                 text: "Cancel",
                 onPress: () => {
-                  // do nothing
+                  /* Do nothing */
                 },
               },
             ]);
