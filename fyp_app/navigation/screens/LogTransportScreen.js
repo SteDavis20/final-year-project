@@ -136,8 +136,10 @@ export default function LogTransportScreen({ route, navigation }) {
       }
     }
     let totalEmissions = kgCo2ePerKm * distance;
-    if (modeOfTransportSelected == "car") {
-      totalEmissions /= numberOfPassengers;
+    if (modeOfTransportSelected == "Car") {
+      if (numberOfPassengers > 0) {
+        totalEmissions /= numberOfPassengers;
+      }
     }
     totalEmissions = Math.round(totalEmissions * 100) / 100;
     return totalEmissions;
