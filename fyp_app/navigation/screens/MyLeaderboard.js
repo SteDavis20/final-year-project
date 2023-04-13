@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { StyleSheet, View, Text, FlatList } from "react-native";
 
 function MyLeaderboard({ data, sortByProp, centerProp, rhsProp }) {
@@ -46,18 +46,7 @@ function MyLeaderboard({ data, sortByProp, centerProp, rhsProp }) {
 
 const styles = StyleSheet.create({
   container: {
-    // flex: 1,
     backgroundColor: "#fff",
-    // alignItems: "center",
-    // justifyContent: "center",
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: "bold",
-    marginVertical: 20,
-    alignSelf: "center",
-    // alignItems: "center",
-    // justifyContent: "center",
   },
   row: {
     paddingTop: 15,

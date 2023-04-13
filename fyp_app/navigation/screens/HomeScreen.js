@@ -4,14 +4,10 @@ import {
   Text,
   ScrollView,
   View,
-  Button,
   Alert,
-  Modal,
   Pressable,
 } from "react-native";
 import React, { useEffect, useState } from "react";
-
-import LogFoodScreen from "./LogFoodScreen";
 
 import { PieChart } from "react-native-gifted-charts";
 
@@ -26,30 +22,18 @@ import {
   getDocs,
   doc,
   getDoc,
-  setDoc,
   addDoc,
 } from "firebase/firestore";
 
 import database from "../../firebase-config";
 
-/*
- *   This dummy data should be replaced with data fetched from database from collections/emission_logs, where userID == uid
- *   foodData where category == "food"
- *   transportData where category == "transport"
- *   uid received after user logs in, need to pass prop of user ID from login to homepage
- */
-import { foodDummyData, transportDummyData } from "../../dummyData";
-
 let myBackgroundColour = "#F1FBFF";
 
 export default function HomeScreen({ route, navigation }) {
-  const [modalVisible, setModalVisible] = useState(false);
-  const [buttonPressed, setButtonPressed] = useState(false);
   const [todaysDate, setTodaysDate] = useState("");
   const [emissionLogs, setEmissionLogs] = useState([]);
   const [foodLogs, setFoodLogs] = useState([]);
   const [transportLogs, setTransportLogs] = useState([]);
-  const [checkedScoreGeneration, setCheckedScoreGeneration] = useState(false);
   const [yesterdaysDate, setYesterdaysDate] = useState("");
   const [userName, setUserName] = useState("");
   const [foodLogTotalCo2e, setFoodLogTotalCo2e] = useState(0);
@@ -87,9 +71,6 @@ export default function HomeScreen({ route, navigation }) {
     setTodaysDate(date + "/" + month + "/" + year);
   }
 
-  /*
-   *   If today is 1st of month, e.g., 01/05/23, will this return 30/04/23, or 31/05/23?
-   */
   function setYesterdaysDateHelper() {
     var date = new Date().getDate() - 1;
     var month = new Date().getMonth() + 1;
@@ -98,15 +79,6 @@ export default function HomeScreen({ route, navigation }) {
     setYesterdaysDate(date + "/" + month + "/" + year);
   }
 
-  /*
-   *   Should also be "where("date", "==", insert today's date here)"
-   *   Currently this will fetch every emission ever logged by the user, e.g., Monday, Tuesday, Wednesday etc., will be displayed
-   *
-   *  Every single time the page is rerendered, refreshed, navigating to this page, the variables already have the data from the previous render, so only need to add
-   * the newest addition, or delete the oldest instead of fetching all over again. The state is saved.
-   * For now this works because the temp arrays and scores are set to empty, populated and then used to set the state, if I did setState(doc.data()) for each emission,
-   * it doubles the emissions every single time because the previous state is saved and then the same data is added over and over and over.
-   */
   async function getEmissionLogsFromDatabase() {
     let databaseEmissionLogs = [];
     let tempFoodLogs = [];
@@ -138,7 +110,6 @@ export default function HomeScreen({ route, navigation }) {
 
   /*
    * When page first renders, check if scores exist, if scores exist, do nothing, if scores do not exist, generate the scores and push to firebase
-   *
    */
   useEffect(() => {
     async function generateScores() {
@@ -148,7 +119,7 @@ export default function HomeScreen({ route, navigation }) {
     generateScores();
   }, [isFocused, yesterdaysDate]);
 
-  /* fetch documents from scores collection, if size <= 0 for yesterdays date, then generate scores for each user and push to firebase
+  /* Fetch documents from scores collection, if size <= 0 for yesterdays date, then generate scores for each user and push to firebase
    * if size of querySnapshot > 0, this means scores have already been generated, so do nothing, i.e., return
    */
   async function checkScoresExist() {
@@ -350,10 +321,6 @@ export default function HomeScreen({ route, navigation }) {
         <StatusBar style="auto" />
         {/****************************************************************************/}
         {/* Food Log Entries */}
-        {/* Maybe make these buttons at a later stage, to allow user to edit/delete entry */}
-
-        {/* Only display heading of Food or Transport, if the entries for the user are not empty? */}
-        {/* If no entries, pie chart will also be empty so need to fill the screen for when no data entered? */}
         <View>
           <ScrollView>
             <Text style={styles.heading}>Food</Text>
@@ -420,9 +387,6 @@ export default function HomeScreen({ route, navigation }) {
               },
               {
                 text: "Cancel",
-                onPress: () => {
-                  /* Do nothing */
-                },
               },
             ]);
           }}
@@ -458,47 +422,6 @@ export default function HomeScreen({ route, navigation }) {
 }
 
 const styles = StyleSheet.create({
-  item: {
-    padding: 20,
-    fontSize: 15,
-    marginTop: 5,
-    flexDirection: "row",
-    width: "100%",
-    backgroundColor: "pink",
-    justifyContent: "space-between",
-    borderRadius: 20,
-    textAlign: "left",
-    borderRadius: 20,
-  },
-  textInput: {
-    height: 40,
-    margin: 12,
-    borderWidth: 1,
-    padding: 10,
-  },
-  button: {
-    alignItems: "center",
-    justifyContent: "center",
-    paddingVertical: 12,
-    paddingHorizontal: 32,
-    borderRadius: 4,
-    elevation: 3,
-    backgroundColor: "cyan",
-  },
-  logEntry: {
-    paddingVertical: 12,
-    paddingHorizontal: 32,
-    borderRadius: 4,
-    margin: 5,
-    elevation: 3,
-    backgroundColor: "cyan",
-    width: "95%",
-  },
-  foodName: {
-    alignItems: "left",
-    width: "50%",
-  },
-  co2e: { textAlign: "right", width: "50%" },
   heading: {
     fontSize: 30,
     fontWeight: "bold",
@@ -506,81 +429,5 @@ const styles = StyleSheet.create({
     padding: 20,
     paddingBottom: 10,
     alignSelf: "center",
-  },
-  welcomeMessage: {
-    fontSize: 20,
-    fontWeight: "bold",
-    color: "black",
-    padding: 20,
-    paddingBottom: 10,
-    alignSelf: "center",
-  },
-});
-
-// styling for log entries on homepage
-const styles1 = StyleSheet.create({
-  container: {
-    padding: 50,
-    flex: 1,
-  },
-  item: {
-    padding: 20,
-    fontSize: 15,
-    marginTop: 5,
-  },
-  centeredView: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    marginTop: 22,
-  },
-  modalView: {
-    margin: 20,
-    height: "30%",
-    width: 200,
-    backgroundColor: "blue",
-    borderRadius: 20,
-    padding: 35,
-    alignItems: "center",
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 5,
-  },
-  button: {
-    borderRadius: 20,
-    padding: 10,
-    elevation: 2,
-  },
-  buttonOpen: {
-    backgroundColor: "#F194FF",
-  },
-  buttonClose: {
-    backgroundColor: "#2196F3",
-  },
-  textStyle: {
-    color: "white",
-    fontWeight: "bold",
-    textAlign: "center",
-  },
-  modalText: {
-    marginBottom: 15,
-    textAlign: "center",
-  },
-});
-
-const styles2 = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  setFontSizeOne: {
-    fontSize: 30, // Define font size here in Pixels
   },
 });

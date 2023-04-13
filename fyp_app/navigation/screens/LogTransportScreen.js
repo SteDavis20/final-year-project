@@ -1,28 +1,23 @@
 import {
   SafeAreaView,
   TextInput,
-  Button,
   Alert,
   StyleSheet,
   Text,
   ScrollView,
   View,
-  Pressable,
 } from "react-native";
 
 import { useEffect, useState } from "react";
 
 import { transportData } from "../../co2Emissions";
 
-import { foodDummyData, transportDummyData } from "../../dummyData";
-
 import ActionButton from "../../Components/Buttons/ActionButton";
 
 import database from "../../firebase-config";
-import { collection, addDoc, doc, setDoc, Timestamp } from "firebase/firestore";
+import { collection, addDoc } from "firebase/firestore";
 
 import FontAwesome from "react-native-vector-icons/FontAwesome";
-import Ionicons from "react-native-vector-icons/Ionicons";
 import SelectDropdown from "react-native-select-dropdown";
 
 const transportTypeData = [
@@ -51,22 +46,18 @@ const transportTypeData = [
 const carSizesData = [
   {
     key: 1,
-    // name: "Small < 1.4 litres",
     name: "Small",
   },
   {
     key: 2,
-    // name: "Medium 1.4-2.0 litres",
     name: "Medium",
   },
   {
     key: 3,
-    // name: "Large > 2.0 litres",
     name: "Large",
   },
   {
     key: 4,
-    // name: "average / unsure",
     name: "Average",
   },
 ];
@@ -349,7 +340,6 @@ export default function LogTransportScreen({ route, navigation }) {
                 [
                   {
                     text: "Cancel",
-                    onPress: () => console.log("Cancel Pressed"),
                     style: "cancel",
                   },
                   {
@@ -375,7 +365,6 @@ export default function LogTransportScreen({ route, navigation }) {
                 [
                   {
                     text: "Cancel",
-                    onPress: () => console.log("Cancel Pressed"),
                     style: "cancel",
                   },
                   {
@@ -408,36 +397,6 @@ export default function LogTransportScreen({ route, navigation }) {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    padding: 50,
-    flex: 1,
-  },
-  item: {
-    padding: 20,
-    fontSize: 15,
-    marginTop: 5,
-    flexDirection: "row",
-    width: "30%",
-    backgroundColor: "pink",
-    justifyContent: "space-between",
-    borderRadius: 20,
-    textAlign: "center",
-  },
-  textInput: {
-    height: 40,
-    margin: 12,
-    borderWidth: 1,
-    padding: 10,
-  },
-  button: {
-    alignItems: "center",
-    justifyContent: "center",
-    paddingVertical: 12,
-    paddingHorizontal: 32,
-    borderRadius: 4,
-    elevation: 3,
-    backgroundColor: "black",
-  },
   heading: {
     fontSize: 25,
     fontWeight: "bold",
@@ -460,89 +419,4 @@ const styles = StyleSheet.create({
     borderBottomColor: "#C5C5C5",
   },
   dropdown1RowTxtStyle: { color: "#444", textAlign: "left" },
-
-  dropdown2ButtonStyle: {
-    width: "80%",
-    height: 50,
-    backgroundColor: "#444",
-    borderRadius: 8,
-  },
-  dropdown2ButtonTxtStyle: {
-    color: "#FFF",
-    textAlign: "center",
-    fontWeight: "bold",
-  },
-  dropdown2DropdownStyle: {
-    backgroundColor: "#444",
-    borderBottomLeftRadius: 12,
-    borderBottomRightRadius: 12,
-  },
-  dropdown2RowStyle: { backgroundColor: "#444", borderBottomColor: "#C5C5C5" },
-  dropdown2RowTxtStyle: {
-    color: "#FFF",
-    textAlign: "center",
-    fontWeight: "bold",
-  },
-
-  dropdown3ButtonStyle: {
-    width: "80%",
-    height: 50,
-    backgroundColor: "#FFF",
-    paddingHorizontal: 0,
-    borderWidth: 1,
-    borderRadius: 8,
-    borderColor: "#444",
-  },
-  dropdown3ButtonChildStyle: {
-    flex: 1,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    paddingHorizontal: 18,
-  },
-  dropdown3ButtonImage: { width: 45, height: 45, resizeMode: "cover" },
-  dropdown3ButtonTxt: {
-    color: "#444",
-    textAlign: "center",
-    fontWeight: "bold",
-    fontSize: 24,
-    marginHorizontal: 12,
-  },
-  dropdown3DropdownStyle: { backgroundColor: "slategray" },
-  dropdown3RowStyle: {
-    backgroundColor: "slategray",
-    borderBottomColor: "#444",
-    height: 50,
-  },
-  dropdown3RowChildStyle: {
-    flex: 1,
-    flexDirection: "row",
-    justifyContent: "flex-start",
-    alignItems: "center",
-    paddingHorizontal: 18,
-  },
-  dropdownRowImage: { width: 45, height: 45, resizeMode: "cover" },
-  dropdown3RowTxt: {
-    color: "#F1F1F1",
-    textAlign: "center",
-    fontWeight: "bold",
-    fontSize: 24,
-    marginHorizontal: 12,
-  },
-
-  dropdown4ButtonStyle: {
-    width: "50%",
-    height: 50,
-    backgroundColor: "#FFF",
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: "#444",
-  },
-  dropdown4ButtonTxtStyle: { color: "#444", textAlign: "left" },
-  dropdown4DropdownStyle: { backgroundColor: "#EFEFEF" },
-  dropdown4RowStyle: {
-    backgroundColor: "#EFEFEF",
-    borderBottomColor: "#C5C5C5",
-  },
-  dropdown4RowTxtStyle: { color: "#444", textAlign: "left" },
 });

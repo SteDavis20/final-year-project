@@ -8,10 +8,7 @@ import {
   Alert,
 } from "react-native";
 
-// import logo from "../assets/Svg/Logo";
-import { SvgXml } from "react-native-svg";
-
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import { database } from "../../firebase-config";
 
@@ -25,7 +22,7 @@ function Login({ navigation }) {
 
   function attemptLogin() {
     const auth = getAuth(database);
-    // navigation.navigate("HomePage", { userID: "Ky0lVuXZJbTZhp9kAj5vkTZOa8T2" });
+    // navigation.navigate("HomePage", { userID: "Ky0lVuXZJbTZhp9kAj5vkTZOa8T2" });   // Uncomment for quick login for testing purposes
     signInWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         const user = userCredential.user;
@@ -67,7 +64,6 @@ function Login({ navigation }) {
 
   return (
     <View style={{ marginTop: 35 }}>
-      {/* <SvgXml xml={logo} width="45" height="45" style={styles.svg} /> */}
       <Text style={styles.heading}>Welcome!</Text>
       <Text style={styles.inputHeading}>Email</Text>
       <SafeAreaView>
@@ -103,10 +99,6 @@ function Login({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  svg: {
-    marginTop: 100,
-    marginLeft: sideMargin,
-  },
   heading: {
     fontSize: 30,
     fontWeight: "bold",

@@ -1,7 +1,3 @@
-import { StatusBar } from "expo-status-bar";
-import { StyleSheet, Text, View } from "react-native";
-
-import { NavigationContainer } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 
 import Icon from "react-native-vector-icons/FontAwesome";
@@ -20,13 +16,6 @@ const IndividualHistoryName = "My Scores";
 
 // create navigator
 const Tab = createBottomTabNavigator();
-
-// icons to use:
-// home
-// user
-// users
-// areachart
-// see: https://oblador.github.io/react-native-vector-icons/
 
 /*
  * Need to pass userID prop to Home page after logging in
@@ -96,14 +85,5 @@ function NavBar({ route, navigation }) {
     </Tab.Navigator>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-});
 
 export default NavBar;

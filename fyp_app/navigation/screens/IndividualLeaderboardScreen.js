@@ -1,4 +1,3 @@
-import { StatusBar } from "expo-status-bar";
 import { useEffect, useState } from "react";
 import { StyleSheet, Text, View, Alert, Button } from "react-native";
 
@@ -17,11 +16,9 @@ import {
 
 import database from "../../firebase-config";
 
-export default function IndividualLeaderboardScreen({ route, navigation }) {
+export default function IndividualLeaderboardScreen({ route }) {
   const [leaderboardScores, setLeaderboardScores] = useState([]);
   const [yesterdaysDate, setYesterdaysDate] = useState("");
-
-  const isFocused = useIsFocused();
 
   const { userID } = route.params;
 
@@ -98,12 +95,6 @@ export default function IndividualLeaderboardScreen({ route, navigation }) {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "center",
-  },
   heading: {
     fontSize: 25,
     fontWeight: "bold",

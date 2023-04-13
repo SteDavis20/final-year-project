@@ -1,19 +1,5 @@
-import { StatusBar } from "expo-status-bar";
-import {
-  StyleSheet,
-  Text,
-  ScrollView,
-  View,
-  Button,
-  Alert,
-  Modal,
-  Pressable,
-} from "react-native";
-import React, { useEffect, useState } from "react";
-
-import Icon from "react-native-vector-icons/FontAwesome";
-
-let myBackgroundColour = "#F1FBFF";
+import { StyleSheet, Text, View, Pressable } from "react-native";
+import React from "react";
 
 export default function ActionButton({
   title,
@@ -27,21 +13,12 @@ export default function ActionButton({
       style={[
         styles.button,
         {
-          // flexDirection: "row",
-          //   shadowColor: "black",
-          //   shadowOffset: {
-          //     width: 5,
-          //     height: 5,
-          //   },
-          //   shadowRadius: 5,
-          //   shadowOpacity: 0.4,
           backgroundColor: backgroundColour,
         },
       ]}
     >
       <Pressable onPress={onPress}>
         <View>
-          {/* <Icon name={iconName} size={30} color="#5F5F5F" /> */}
           <Text
             style={{
               fontSize: fontSize,
