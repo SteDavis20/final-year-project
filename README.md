@@ -25,17 +25,21 @@ The purpose of this application is to apply gamification frameworks to a social 
 
 ## Video Demo(s)
 
-To-do: Record gif(s).
+<video src="GitHub_Demo.mp4" width=180/>
 
 &nbsp;
 
 ## Running the Application
 
-Clone the repository, navigate into the directory and run the application using expo by typing the following commands into the terminal when you are in the root directory of the cloned repository:
+Prior to running the application, you will need to have setup and installed an iOS or an Android emulator. iOS emulators are set up through XCode, and Android emulators are setup through Android Studio.
+
+Once you have the emulators set up, clone the repository and navigate into the fyp_app folder. From here, run the application using expo. To accomplish these steps, type the following commands into the terminal after cloning the repository:
 
 - cd fyp_app
 - npm install
-- npm start –ios or npm start –android
+- npm start
+- i (to run iPhone simulator) or
+- a (to run Android simulator)
 
 &nbsp;
 
