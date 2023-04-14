@@ -4,8 +4,6 @@
 
 This repo contains the source code and documentation for my final year project, titled “Gamifying Carbon Footprints to Motivate Pro-Environmental Behavioural Change”.
 
-&nbsp;
-
 ### Features of the application
 
 - View today’s emission logs
@@ -15,19 +13,13 @@ This repo contains the source code and documentation for my final year project, 
 - View position in team leaderboard
 - View individual progress chart of scores over time
 
-&nbsp;
-
 ## Purpose
 
 The purpose of this application is to apply gamification frameworks to a social mobile application, aiming to motivate pro-environmental behavioural change and thus reduce individual carbon footprints.
 
-&nbsp;
+## Video Demo
 
-## Video Demo(s)
-
-<video src="GitHub_Demo.mp4" width=180/>
-
-&nbsp;
+https://user-images.githubusercontent.com/74012902/231807651-e4e43165-e79c-48cb-9f34-c092ad50dd32.mp4
 
 ## Running the Application
 
@@ -40,8 +32,6 @@ Once you have the emulators set up, clone the repository and navigate into the f
 - npm start
 - i (to run iPhone simulator) or
 - a (to run Android simulator)
-
-&nbsp;
 
 ### Demo Account Login Credentials
 
