@@ -179,19 +179,24 @@ export default function HomeScreen({ route, navigation }) {
   }
 
   function getScoreFromCo2(co2e) {
-    let score = 0;
-    if (co2e <= 300) {
-      score = 10;
-    } else if (co2e <= 400) {
-      score = 8;
-    } else if (co2e <= 500) {
-      score = 6;
-    } else if (co2e <= 600) {
-      score = 4;
-    } else {
-      score = 2;
+    let scoreMap = [
+      { co2e: 10, score: 12 },
+      { co2e: 11, score: 11 },
+      { co2e: 12, score: 10 },
+      { co2e: 13, score: 9 },
+      { co2e: 14, score: 8 },
+      { co2e: 15, score: 7 },
+      { co2e: 16, score: 6 },
+      { co2e: 17, score: 5 },
+      { co2e: 18, score: 4 },
+      { co2e: 19, score: 3 },
+    ];
+    for (let i = 0; i < scoreMap.length; i++) {
+      if (co2e <= scoreMap[i].co2e) {
+        return scoreMap[i].score;
+      }
     }
-    return score;
+    return 3;
   }
 
   const renderLegend = (text, color) => {
